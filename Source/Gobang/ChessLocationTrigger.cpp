@@ -55,11 +55,19 @@ void AChessLocationTrigger::TriggerClicked(UPrimitiveComponent* ClickedComp, FKe
 				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK2")));
 				OwnerBoard->SetCurrentStatus(3);
 				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK3")));
-				OwnerBoard->MakeAiAction();
+				FTimerHandle UniqueHandle;
+				FTimerDelegate RespawnDelegate = FTimerDelegate::CreateUObject(this, &AChessLocationTrigger::TimerAction);
+				GetWorldTimerManager().SetTimer(UniqueHandle, RespawnDelegate, 1, false);
+				//OwnerBoard->MakeAiAction();
 				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK4")));
 			}
 		}
 	}
+}
+
+void AChessLocationTrigger::TimerAction()
+{
+	OwnerBoard->MakeAiAction();
 }
 
 // Called when the game starts or when spawned

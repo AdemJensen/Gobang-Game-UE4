@@ -30,6 +30,9 @@ public:
 	UFUNCTION()
 		void TriggerClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked);
 
+	UFUNCTION()
+		void TimerAction();
+
 	int32 Coordinate_X;
 	int32 Coordinate_Y;
 	bool IsTaken = false;
