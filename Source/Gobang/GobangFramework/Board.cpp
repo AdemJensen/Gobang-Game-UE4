@@ -2,6 +2,13 @@
 
 Board::Board()
 {
+	useBan = false;
+	Board::clearBoard();
+}
+
+Board::Board(bool useBanMode)
+{
+	useBan = useBanMode;
 	Board::clearBoard();
 }
 
@@ -139,11 +146,159 @@ Board::ChessPlayer Board::getBoard(int x, int y) const
 	return Board::OUTED;
 }
 
-/*
- * To judge if a location is able to place a chess or not.
- * return true if the board is empty.
- */
-bool Board::isAvailable(int x, int y) const
+int MX[] = { -1, -1, -1, 0, 1, 1, 1, 0 };
+int MY[] = { -1, 0, 1, 1, 1, 0, -1, -1 };
+int GF(int ori, int diff, int scale)
 {
-	return Board::board[x][y] == 0;
+	return ori + diff * scale;
+}
+bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
+{
+	if (useBan && player == Board::PLAYER_1)
+	{
+		if (getBoard(x, y) != Board::VOIDED) return false;
+		// Judge Long-link.
+		int lens1[] = { 0, 0, 0, 0 };
+		for (int i = 0; i < 4; i++)
+		{
+			// positive
+			for (int j = 1; j < 6; j++)
+			{
+				if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == player) lens1[i]++;
+				else break;
+			}
+			// negitive
+			for (int j = 1; j < 6; j++)
+			{
+				if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == player) lens1[i]++;
+				else break;
+			}
+		}
+		for (int i = 0; i < 4; i++) if (lens1[i] + 1 >= 6) return false;
+
+		// Judge if can win.
+		for (int i = 0; i < 4; i++)
+		{
+			lens1[i] = 0;
+			// positive
+			for (int j = 1; j < 5; j++)
+			{
+				if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == player) lens1[i]++;
+				else break;
+			}
+			// negitive
+			for (int j = 1; j < 5; j++)
+			{
+				if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == player) lens1[i]++;
+				else break;
+			}
+		}
+		for (int i = 0; i < 4; i++) if (lens1[i] + 1 == 5) return true;
+		
+		int jud_type[] = { 0, 0, 0, 0 }; // 0 = none, 1 = four_round, 2 = live_three;
+		// Judge four_round
+		int bef_gap[] = { 0, 0, 0, 0 };
+		int aft_gap[] = { 0, 0, 0, 0 };
+		int bef_gap_for3[] = { 0, 0, 0, 0 };
+		int aft_gap_for3[] = { 0, 0, 0, 0 };
+		int bef_gap_rev[] = { 0, 0, 0, 0 };
+		int aft_gap_rev[] = { 0, 0, 0, 0 };
+		int bef_gap_rev_for3[] = { 0, 0, 0, 0 };
+		int aft_gap_rev_for3[] = { 0, 0, 0, 0 };
+		for (int i = 0; i < 4; i++)
+		{
+			// positive
+			bool before_gap = true;
+			for (int j = 1; j < 5; j++)
+			{
+				if (before_gap)
+				{
+					if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED)
+					{
+						before_gap = false;
+						bef_gap_for3[i] = bef_gap[i];
+						continue;
+					}
+					else if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == player)
+					{
+						bef_gap[i]++;
+					}
+					else
+					{
+						break;
+					}
+				}
+				else
+				{
+					if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == player)
+					{
+						aft_gap[i]++;
+					}
+					else
+					{
+						if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED) aft_gap_for3[i] = aft_gap[i];
+						break;
+					}
+				}
+			}
+			// negitive
+			before_gap = true;
+			for (int j = 1; j < 5; j++)
+			{
+				if (before_gap)
+				{
+					if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == Board::VOIDED)
+					{
+						before_gap = false;
+						bef_gap_rev_for3[i] = bef_gap_rev[i];
+						continue;
+					}
+					else if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == player)
+					{
+						bef_gap_rev[i]++;
+					}
+					else
+					{
+						break;
+					}
+				}
+				else
+				{
+					if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == player)
+					{
+						aft_gap_rev[i]++;
+					}
+					else
+					{
+						if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED) aft_gap_rev_for3[i] = aft_gap_rev[i];
+						break;
+					}
+				}
+			}
+		}
+		int live_three_num = 0;
+		int forster_four_num = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			if (bef_gap[i] + aft_gap[i] + bef_gap_rev[i] + 1 == 4 || bef_gap_rev[i] + aft_gap_rev[i] + bef_gap[i] + 1 == 4)
+			{
+				forster_four_num++;
+			}
+			else if (bef_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3)
+			{ // Judge live_three:appended
+				live_three_num++;
+			}
+			else if (bef_gap_for3[i] + aft_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 4 || bef_gap_rev_for3[i] + aft_gap_rev_for3[i] + bef_gap_for3[i] + 1 == 4)
+			{ // Judge live_three:heaped
+				live_three_num++;
+			}
+		}
+		if (live_three_num >= 2) return false;
+		if (forster_four_num >= 2) return false;
+		return true;
+	}
+	else
+	{
+		return Board::board[x][y] == 0;
+	}
 }

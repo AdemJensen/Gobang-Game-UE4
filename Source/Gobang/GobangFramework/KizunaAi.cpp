@@ -51,9 +51,9 @@ std::string getChessConsStr(ChessConstruction co)
 	return reason;
 }
 
-void addVal(KizunaAiCache< std::pair<bool, ChessConstruction>, DecisionOffer>* cache, const Board& board, std::pair<bool, ChessConstruction> key, DecisionOffer val)
+void addVal(KizunaAi* ai, KizunaAiCache< std::pair<bool, ChessConstruction>, DecisionOffer>* cache, const Board& board, std::pair<bool, ChessConstruction> key, DecisionOffer val)
 {
-	if (Board::onBoard(val.getLocation().first, val.getLocation().second) && board.isAvailable(val.getLocation().first, val.getLocation().second))
+	if (Board::onBoard(val.getLocation().first, val.getLocation().second) && board.isAvailable(val.getLocation().first, val.getLocation().second, ai->getPlayer()))
 	{
 		cache->addVal(key, val);
 		if (SHOW_DETECTION_INFO)
@@ -170,6 +170,7 @@ DecisionOffer KizunaAi::getBestChoice(std::vector<DecisionOffer>& options)
 		int rate = 0;
 		for (int j = 0; j < temp.size(); j++)
 		{
+			if (getDifficulty() < 2 && ((int) temp[j].second) > 2) continue;
 			str << "\t\tPoint: " << (temp[j].first ? "ATK" : "DEF") << " " << getChessConsStr(temp[j].second) << " Rate:" << ratingData[temp[j]] << std::endl;
 			rate += ratingData[temp[j]];
 		}
@@ -216,7 +217,12 @@ std::pair<int, int> KizunaAi::makeAction(const Board& board)
 	else // No suggestion
 	{
 		// check if this is the first chess
-		if (board.isEmpty()) return std::pair<int, int>(board.getBoardSize() / 2, board.getBoardSize() / 2);
+		if (board.isEmpty())
+		{
+			std::pair<int, int> selected = std::make_pair(board.getBoardSize() / 2, board.getBoardSize() / 2);
+			if (board.isAvailable(selected.first, selected.second, getPlayer())) return selected;
+			else return std::make_pair(-1, -1);
+		}
 
 		// Select the possible best:
 		int best = 0;
@@ -225,7 +231,7 @@ std::pair<int, int> KizunaAi::makeAction(const Board& board)
 		{
 			for (int j = 0; j < board.getBoardSize(); j++)
 			{
-				if (board.isAvailable(i, j))
+				if (board.isAvailable(i, j, getPlayer()))
 				{
 					int score = 0;
 					if (board.getBoard(i - 1, j - 1) == Board::OUTED) score -= 1;
@@ -354,13 +360,13 @@ void KizunaAi::detect_CONS_LIVE_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_R");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else // lost
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 	if (down)
@@ -368,13 +374,13 @@ void KizunaAi::detect_CONS_LIVE_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_D");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else // lost
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 	if (rd)
@@ -382,13 +388,13 @@ void KizunaAi::detect_CONS_LIVE_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_RD");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else // lost
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 	if (ld)
@@ -396,13 +402,13 @@ void KizunaAi::detect_CONS_LIVE_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_LD");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else // lost
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 }
@@ -492,11 +498,11 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + k, ChessConstruction::CONS_APPEND_5, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + k, ChessConstruction::CONS_APPEND_5, true));
 				}
 				else // must destroy immediately
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + k, ChessConstruction::CONS_APPEND_5, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + k, ChessConstruction::CONS_APPEND_5, false));
 				}
 				break;
 			}
@@ -511,11 +517,11 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y, ChessConstruction::CONS_APPEND_5, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y, ChessConstruction::CONS_APPEND_5, true));
 				}
 				else // must destroy immediately
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y, ChessConstruction::CONS_APPEND_5, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y, ChessConstruction::CONS_APPEND_5, false));
 				}
 				break;
 			}
@@ -530,11 +536,11 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y + k, ChessConstruction::CONS_APPEND_5, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y + k, ChessConstruction::CONS_APPEND_5, true));
 				}
 				else // must destroy immediately
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y + k, ChessConstruction::CONS_APPEND_5, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y + k, ChessConstruction::CONS_APPEND_5, false));
 				}
 				break;
 			}
@@ -549,11 +555,11 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y - k, ChessConstruction::CONS_APPEND_5, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y - k, ChessConstruction::CONS_APPEND_5, true));
 				}
 				else // must destroy immediately
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y - k, ChessConstruction::CONS_APPEND_5, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + k, y - k, ChessConstruction::CONS_APPEND_5, false));
 				}
 				break;
 			}
@@ -577,13 +583,13 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_R_SPC");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y - 1, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x, y + 4, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 	if (down3)
@@ -591,13 +597,13 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_D_SPC");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 	if (rd3)
@@ -605,13 +611,13 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_RD_SPC");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 	if (ld3)
@@ -619,13 +625,13 @@ void KizunaAi::detect_CONS_FORSTER_4(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_4_LD_SPC");
 		if (getPlayer() == cur)	// win!
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_APPEND_5, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_APPEND_5), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_APPEND_5, false));
 		}
 	}
 }
@@ -677,16 +683,16 @@ void KizunaAi::detect_CONS_SLEEP_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win next place
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + k, ChessConstruction::CONS_LIVE_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + k, ChessConstruction::CONS_LIVE_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_FORSTER_4, true));
 					// Only added other "FORSTER_4" to add other ways to win.
 				}
 				else // must destroy unless have priority
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + k, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + k, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_LIVE_4, false));
 					// Because to destroy a SLEEP_4 has thess three ways, this is not an error.
 				}
 				break;
@@ -702,16 +708,16 @@ void KizunaAi::detect_CONS_SLEEP_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win next place
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y, ChessConstruction::CONS_LIVE_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y, ChessConstruction::CONS_LIVE_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_FORSTER_4, true));
 					// Only added other "FORSTER_4" to add other ways to win.
 				}
 				else // must destroy unless have priority
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_LIVE_4, false));
 					// Because to destroy a SLEEP_4 has thess three ways, this is not an error.
 				}
 				break;
@@ -727,16 +733,16 @@ void KizunaAi::detect_CONS_SLEEP_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win next place
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y + k, ChessConstruction::CONS_LIVE_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y + k, ChessConstruction::CONS_LIVE_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_FORSTER_4, true));
 					// Only added other "FORSTER_4" to add other ways to win.
 				}
 				else // must destroy unless have priority
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y + k, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y + k, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_LIVE_4, false));
 					// Because to destroy a SLEEP_4 has thess three ways, this is not an error.
 				}
 				break;
@@ -752,16 +758,16 @@ void KizunaAi::detect_CONS_SLEEP_4(const Board& board, int x, int y)
 			{
 				if (getPlayer() == cur) // win next place
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y - k, ChessConstruction::CONS_LIVE_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y - k, ChessConstruction::CONS_LIVE_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_FORSTER_4, true));
 					// Only added other "FORSTER_4" to add other ways to win.
 				}
 				else // must destroy unless have priority
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y - k, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + k, y - k, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_LIVE_4, false));
 					// Because to destroy a SLEEP_4 has thess three ways, this is not an error.
 				}
 				break;
@@ -790,13 +796,13 @@ void KizunaAi::detect_CONS_LIVE_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_3_R");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_LIVE_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_4, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_LIVE_4, false));
 		}
 	}
 	if (down)
@@ -804,13 +810,13 @@ void KizunaAi::detect_CONS_LIVE_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_3_D");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_4, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_4, false));
 		}
 	}
 	if (rd)
@@ -818,13 +824,13 @@ void KizunaAi::detect_CONS_LIVE_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_3_RD");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_4, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_4, false));
 		}
 	}
 	if (ld)
@@ -832,13 +838,13 @@ void KizunaAi::detect_CONS_LIVE_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_3_LD");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_4, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_4, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_4, false));
 		}
 	}
 }
@@ -856,15 +862,15 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "SLEEP_3_F1_R");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_SLEEP_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 3, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 3, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 	a = board.getBoard(x - 1, y);
@@ -874,15 +880,15 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "SLEEP_3_F1_D");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_SLEEP_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 	a = board.getBoard(x - 1, y - 1);
@@ -892,15 +898,15 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "SLEEP_3_F1_RD");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y + 1, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y + 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_SLEEP_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y + 1, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y + 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 	a = board.getBoard(x - 1, y + 1);
@@ -910,15 +916,15 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "SLEEP_3_F1_LD");
 		if (getPlayer() == cur)	// win on next round
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y - 1, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y - 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_SLEEP_4, true));
 		}
 		else // must destroy unless have priority
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y - 1, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 1, y - 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 
@@ -934,26 +940,26 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 2, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 2, ChessConstruction::CONS_FORSTER_4, true));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_FORSTER_4, true));
 				}
 			}
 			else
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 2, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 1, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y - 2, ChessConstruction::CONS_FORSTER_4, false));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 3, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x, y + 4, ChessConstruction::CONS_FORSTER_4, false));
 				}
 			}
 		}
@@ -969,26 +975,26 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y, ChessConstruction::CONS_FORSTER_4, true));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_FORSTER_4, true));
 				}
 			}
 			else
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y, ChessConstruction::CONS_FORSTER_4, false));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y, ChessConstruction::CONS_FORSTER_4, false));
 				}
 			}
 		}
@@ -1004,26 +1010,26 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_FORSTER_4, true));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_FORSTER_4, true));
 				}
 			}
 			else
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_FORSTER_4, false));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y + 4, ChessConstruction::CONS_FORSTER_4, false));
 				}
 			}
 		}
@@ -1039,26 +1045,26 @@ void KizunaAi::detect_CONS_SLEEP_3(const Board& board, int x, int y)
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_FORSTER_4, true));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_FORSTER_4, true));
-					addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_FORSTER_4, true));
+					addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_FORSTER_4, true));
 				}
 			}
 			else
 			{
 				if (a == Board::VOIDED)
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_FORSTER_4, false));
 				}
 				else
 				{
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_FORSTER_4, false));
-					addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_FORSTER_4, false));
+					addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_FORSTER_4), DecisionOffer(x + 4, y - 4, ChessConstruction::CONS_FORSTER_4, false));
 				}
 			}
 		}
@@ -1077,17 +1083,17 @@ void KizunaAi::detect_CONS_LIVE_2(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_2_R");
 		if (getPlayer() == cur)
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y + 2, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y - 2, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y + 2, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x, y - 2, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_3, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 2, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 2, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y + 2, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 2, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x, y - 1, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 	a = board.getBoard(x - 1, y);
@@ -1097,17 +1103,17 @@ void KizunaAi::detect_CONS_LIVE_2(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_2_D");
 		if (getPlayer() == cur)
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 2, y, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 2, y, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_3, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 2, y, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 2, y, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 	a = board.getBoard(x - 1, y - 1);
@@ -1117,17 +1123,17 @@ void KizunaAi::detect_CONS_LIVE_2(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_2_RD");
 		if (getPlayer() == cur)
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y + 2, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y + 2, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_3, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y + 2, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y + 2, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y + 3, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 2, y - 2, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y - 1, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 	a = board.getBoard(x - 1, y + 1);
@@ -1137,17 +1143,17 @@ void KizunaAi::detect_CONS_LIVE_2(const Board& board, int x, int y)
 		__DEBUG_DETECT__(x, y, "LIVE_2_LD");
 		if (getPlayer() == cur)
 		{
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y - 2, ChessConstruction::CONS_LIVE_3, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_SLEEP_4, true));
-			addVal(&mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y - 2, ChessConstruction::CONS_LIVE_3, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_SLEEP_4), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_SLEEP_4, true));
+			addVal(this, &mem, board, std::make_pair(true, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_3, true));
 		}
 		else
 		{
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y - 2, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_LIVE_3, false));
-			addVal(&mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 2, y - 2, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x + 3, y - 3, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 2, y + 2, ChessConstruction::CONS_LIVE_3, false));
+			addVal(this, &mem, board, std::make_pair(false, ChessConstruction::CONS_LIVE_3), DecisionOffer(x - 1, y + 1, ChessConstruction::CONS_LIVE_3, false));
 		}
 	}
 }

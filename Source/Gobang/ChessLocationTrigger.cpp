@@ -63,6 +63,7 @@ void AChessLocationTrigger::TriggerClicked(UPrimitiveComponent* ClickedComp, FKe
 			}
 		}
 	}
+	OwnerBoard->HideHintIndicator();
 }
 
 void AChessLocationTrigger::TimerAction()

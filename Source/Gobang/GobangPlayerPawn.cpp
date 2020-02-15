@@ -45,8 +45,11 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 		
 		if (BoardIndicator != nullptr)
 		{
-			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), *(HitActor->GetName())));
-			MyGameMode->Manager->SetPlayerIndicator(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y);
+			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
+			MyGameMode->Manager->SetPlayerIndicator(
+				BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
+				MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer())
+			);
 		}
 		else
 		{

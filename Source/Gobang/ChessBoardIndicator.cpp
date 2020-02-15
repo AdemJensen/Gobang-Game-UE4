@@ -23,18 +23,25 @@ AChessBoardIndicator::AChessBoardIndicator()
 
 	PlayerMaterial = CreateDefaultSubobject<UMaterial>("PlayerMaterial");
 	auto PlayerMaterialAsset = ConstructorHelpers::FObjectFinder<UMaterial>(TEXT("Material'/Game/SelectorMaterial_Player.SelectorMaterial_Player'"));
-	if (MeshAsset.Object != nullptr)	// if asset not found, then it's nullptr
+	if (PlayerMaterialAsset.Object != nullptr)	// if asset not found, then it's nullptr
 	{
 		PlayerMaterial = PlayerMaterialAsset.Object;
 	}
 
 	LastMaterial = CreateDefaultSubobject<UMaterial>("LastMaterial");
 	auto LastMaterialAsset = ConstructorHelpers::FObjectFinder<UMaterial>(TEXT("Material'/Game/SelectorMaterial_Last.SelectorMaterial_Last'"));
-	if (MeshAsset.Object != nullptr)	// if asset not found, then it's nullptr
+	if (LastMaterialAsset.Object != nullptr)	// if asset not found, then it's nullptr
 	{
 		LastMaterial = LastMaterialAsset.Object;
 		Mesh->SetMaterial(0, LastMaterial);
-		IsPlayerNow = false;
+		CurrentMat = 2;
+	}
+
+	HintMaterial = CreateDefaultSubobject<UMaterial>("HintMaterial");
+	auto HintMaterialAsset = ConstructorHelpers::FObjectFinder<UMaterial>(TEXT("Material'/Game/SelectorMaterial_Hint.SelectorMaterial_Hint'"));
+	if (HintMaterialAsset.Object != nullptr)	// if asset not found, then it's nullptr
+	{
+		HintMaterial = HintMaterialAsset.Object;
 	}
 
 	SetRootComponent(Mesh);
@@ -54,23 +61,25 @@ void AChessBoardIndicator::Tick(float DeltaTime)
 
 }
 
-void AChessBoardIndicator::SetIndicatorColor(bool IsPlayer)
+void AChessBoardIndicator::SetIndicatorColor(int Mat)
 {
-	if (IsPlayer)
+	if (CurrentMat != Mat)
 	{
-		if (!IsPlayerNow)
+		switch (Mat)
 		{
+		case 1:
 			Mesh->SetMaterial(0, PlayerMaterial);
-			IsPlayerNow = true;
-		}
-	}
-	else
-	{
-		if (IsPlayerNow)
-		{
+			break;
+		case 2:
 			Mesh->SetMaterial(0, LastMaterial);
-			IsPlayerNow = false;
+			break;
+		case 3:
+			Mesh->SetMaterial(0, HintMaterial);
+			break;
+		default:
+			return;
 		}
+		CurrentMat = Mat;
 	}
 }
 

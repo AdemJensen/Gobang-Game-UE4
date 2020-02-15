@@ -36,6 +36,9 @@ public:
 		AChessBoardIndicator* Indicator_Last;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Indicators")
+		AChessBoardIndicator* Indicator_Hint;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Indicators")
 		USoundWave* PlaceChessAudio;
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
@@ -48,10 +51,19 @@ public:
 		void EnableGameboard();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-		void SetPlayerIndicator(int32 X, int32 Y);
+		void SetPlayerIndicator(int32 X, int32 Y, bool IsOk);
 
 	int32 PlayerIndPos_X = 0;
 	int32 PlayerIndPos_Y = 0;
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		void SetHintIndicator(int32 X, int32 Y);
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		void HideHintIndicator();
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		void DisplayHint();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void HidePlayerIndicator();
@@ -89,8 +101,44 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Operations")
 		bool IsOver() { return board.isOver(); }
 
+	bool AiSurroundered = false;
 	UFUNCTION(BlueprintCallable, Category = "Game Operations")
-		int32 GetWinner() { return board.getWinner(); }
+		void AiSurrounder();
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		bool IsAiSurroundered() { return AiSurroundered; }
+
+	bool UserSurroundered = false;
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		void UserSurrounder();
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		bool IsUserSurroundered() { return UserSurroundered; }
+
+	int32 AiDifficulty = 2;
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		void SetAiDifficulty(int Difficulty) { AiDifficulty = Difficulty; }
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		int32 GetAiDifficulty() { return AiDifficulty; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		int32 GetWinner();
+
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		bool RetractChess();
+
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		int32 GetRetractRemain() { return RetractTimeRemain; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		int32 GetChessNum() { return Chesses.Num(); }
+
+	bool useBanMode;
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		void SetBanMode(bool useBan) { useBanMode = useBan; }
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		bool GetBanMode() { return useBanMode; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Operations")
+		bool IsAvailable(int X, int Y, int player) { return board.isAvailable(X, Y, player); }
 
 	int32 WinX = -1;
 	int32 WinY = -1;
@@ -102,11 +150,17 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Operations")
 		int32 GetWinPositionDir();
 
-	UFUNCTION(BlueprintCallable, Category = "Informations")
+	UFUNCTION(BlueprintCallable, Category = "Information")
 		FVector GetAbsolutePosition(int32 X, int32 Y);
 
 	UPROPERTY()
 		TArray<AActor*> Chesses;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Information")
+		int32 RetractTimeRemain;
+
+	int32 DefaultRetractTime;
+
 
 protected:
 	// Called when the game starts or when spawned
@@ -115,6 +169,7 @@ protected:
 	Board board;
 
 	KizunaAi MissAi;
+	KizunaAi PlayerHelper;
 
 	AActor* Triggers[BOARD_SIZE][BOARD_SIZE];
 

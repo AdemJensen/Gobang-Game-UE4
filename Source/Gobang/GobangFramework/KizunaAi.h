@@ -15,6 +15,8 @@ private:
 	
 	std::map<std::pair<bool, ChessConstruction>, int> ratingData;
 
+	int difficulty = 2;
+
 protected:
 	// These declarations are for the board detections.
 
@@ -32,6 +34,9 @@ public:
 
 	void setPlayer(Board::ChessPlayer player);
 	Board::ChessPlayer getPlayer();
+
+	void setDifficulty(int dif) { difficulty = dif; }
+	int getDifficulty() { return difficulty; }
 	
 	void detectSituation(const Board& board);
 

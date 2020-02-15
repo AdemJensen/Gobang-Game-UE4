@@ -11,6 +11,8 @@ private:
 	std::stack< std::pair<int, int> > moves;
 	
 	int board[SIZE][SIZE];
+
+	bool useBan;
 	
 public:
 	typedef int ChessPlayer;
@@ -20,6 +22,10 @@ public:
 	const static int PLAYER_2 = 2;
 	
 	Board();
+	Board(bool useBanMode);
+
+	void setBanMode(bool useBanMode) { useBan = useBanMode; }
+	bool getBanMode() { return useBan; }
 
 	/*
 	 * To check if a coordinate is on the board
@@ -84,6 +90,6 @@ public:
 	 * To judge if a location is able to place a chess or not.
 	 * return true if the board is empty.
 	 */
-	bool isAvailable(int x, int y) const;
+	bool isAvailable(int x, int y, Board::ChessPlayer player) const;
 	
 };

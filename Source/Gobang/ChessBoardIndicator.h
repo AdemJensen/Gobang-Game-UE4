@@ -24,10 +24,13 @@ public:
 	UPROPERTY(Category = "Properties", VisibleDefaultsOnly, BlueprintReadOnly)
 		class UMaterial* LastMaterial;
 
-	bool IsPlayerNow;
+	UPROPERTY(Category = "Properties", VisibleDefaultsOnly, BlueprintReadOnly)
+		class UMaterial* HintMaterial;
+
+	int CurrentMat;
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-		void SetIndicatorColor(bool IsPlayer);
+		void SetIndicatorColor(int Mat);
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void SetIndicatorVisibility(bool Visibility);

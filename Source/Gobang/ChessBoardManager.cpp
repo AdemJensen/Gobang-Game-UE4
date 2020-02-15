@@ -13,6 +13,7 @@ AChessBoardManager::AChessBoardManager()
 
 	Indicator_Player = CreateDefaultSubobject<AChessBoardIndicator>("Indicator_Player");
 	Indicator_Last = CreateDefaultSubobject<AChessBoardIndicator>("Indicator_Last");
+	Indicator_Hint = CreateDefaultSubobject<AChessBoardIndicator>("Indicator_Hint");
 	PlaceChessAudio = CreateDefaultSubobject<USoundWave>("PlaceChessAudio");
 
 	DisableGameboard();
@@ -25,10 +26,13 @@ void AChessBoardManager::InitGameBoard(bool isViewOnBlack)
 	UWorld* TheWorld = GetWorld();
 	Indicator_Player = TheWorld->SpawnActor<AChessBoardIndicator>(Location_LU + FVector(0, 0, 2), FRotator(0, 0, 0));
 	Indicator_Last = TheWorld->SpawnActor<AChessBoardIndicator>(Location_LU + FVector(0, 0, 2), FRotator(0, 0, 0));
-	Indicator_Player->SetIndicatorColor(true);
-	Indicator_Last->SetIndicatorColor(false);
+	Indicator_Hint = TheWorld->SpawnActor<AChessBoardIndicator>(Location_LU + FVector(0, 0, 2), FRotator(0, 0, 0));
+	Indicator_Player->SetIndicatorColor(1);
+	Indicator_Last->SetIndicatorColor(2);
+	Indicator_Hint->SetIndicatorColor(3);
 	Indicator_Player->SetIndicatorVisibility(false);
 	Indicator_Last->SetIndicatorVisibility(false);
+	Indicator_Hint->SetIndicatorVisibility(false);
 	if (!isViewOnBlack)
 	{
 		std::swap(Location_LU, Location_RD);
@@ -41,7 +45,13 @@ void AChessBoardManager::InitGameBoard(bool isViewOnBlack)
 		Chesses[i]->Destroy();
 	}
 	Chesses = TArray<AActor*>();
+	AiSurroundered = false;
+	UserSurroundered = false;
 	board.clearBoard();
+	board.setBanMode(GetBanMode());
+	MissAi.setDifficulty(AiDifficulty);
+	PlayerHelper.setPlayer(GetSelfPlayer());
+	RetractTimeRemain = DefaultRetractTime;
 	EnableGameboard();
 }
 
@@ -57,6 +67,7 @@ void AChessBoardManager::DisableGameboard()
 	}
 	if (Indicator_Last != nullptr) Indicator_Last->SetIndicatorVisibility(false);
 	if (Indicator_Player != nullptr) Indicator_Player->SetIndicatorVisibility(false);
+	if (Indicator_Hint != nullptr) Indicator_Hint->SetIndicatorVisibility(false);
 }
 
 void AChessBoardManager::EnableGameboard()
@@ -84,10 +95,12 @@ void AChessBoardManager::EnableGameboard()
 	}
 }
 
-void AChessBoardManager::SetPlayerIndicator(int32 X, int32 Y)
+void AChessBoardManager::SetPlayerIndicator(int32 X, int32 Y, bool IsOk)
 {
 	if (Indicator_Player == nullptr) return;
-	Indicator_Player->SetActorLocation(FVector(Location_LU.X + unitX * X, Location_LU.Y + unitY * Y, Indicator_Player->GetActorLocation().Z));
+	Indicator_Player->SetActorLocation(FVector(Location_LU.X + unitX * X, Location_LU.Y + unitY * Y, Location_LU.Z + 1.2));
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Player indicator set to (%s)"), IsOk ? TEXT("White") : TEXT("Orange")));
+	Indicator_Player->SetIndicatorColor(IsOk ? 1 : 2);
 	Indicator_Player->SetIndicatorVisibility(true);
 	PlayerIndPos_X = X;
 	PlayerIndPos_Y = Y;
@@ -98,10 +111,28 @@ void AChessBoardManager::HidePlayerIndicator() {
 	Indicator_Player->SetIndicatorVisibility(false); 
 }
 
+void AChessBoardManager::SetHintIndicator(int32 X, int32 Y)
+{
+	if (Indicator_Hint == nullptr) return;
+	Indicator_Hint->SetActorLocation(FVector(Location_LU.X + unitX * X, Location_LU.Y + unitY * Y, Location_LU.Z + 1.1));
+	Indicator_Hint->SetIndicatorVisibility(true);
+}
+
+void AChessBoardManager::HideHintIndicator() {
+	if (Indicator_Hint == nullptr) return;
+	Indicator_Hint->SetIndicatorVisibility(false);
+}
+
+void AChessBoardManager::DisplayHint()
+{
+	std::pair<int, int> sug = PlayerHelper.makeAction(board);
+	SetHintIndicator(sug.first, sug.second);
+}
+
 void AChessBoardManager::SetLastIndicator(int32 X, int32 Y)
 {
 	if (Indicator_Last == nullptr) return;
-	Indicator_Last->SetActorLocation(FVector(Location_LU.X + unitX * X, Location_LU.Y + unitY * Y, Indicator_Last->GetActorLocation().Z));
+	Indicator_Last->SetActorLocation(FVector(Location_LU.X + unitX * X, Location_LU.Y + unitY * Y, Location_LU.Z + 1));
 	Indicator_Last->SetIndicatorVisibility(true);
 }
 
@@ -118,7 +149,7 @@ void AChessBoardManager::SetSelfPlayer(bool PlayerIsBlack)
 
 bool AChessBoardManager::PlaceChess(int32 X, int32 Y, bool IsBlack)
 {
-	if (!board.isAvailable(X, Y)) return false;
+	if (!board.isAvailable(X, Y, (IsBlack ? 1 : 2))) return false;
 	board.placeChess((IsBlack ? 1 : 2), X, Y);
 	AGobangChess* ChessObj = GetWorld()->SpawnActor<AGobangChess>(Location_LU + FVector(unitX * X, unitY * Y, 0), FRotator(0, 0, 0));
 	if (ChessObj != nullptr)
@@ -137,7 +168,8 @@ void AChessBoardManager::MakeAiAction()
 {
 	std::pair<int, int> decision = MissAi.makeAction(board);
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Robot placed at (%d, %d), Color %s"), decision.first, decision.second, GetSelfPlayer() == 2 ? TEXT("Black") : TEXT("White")));
-	if (PlaceChess(decision.first, decision.second, GetSelfPlayer() == 2))
+	if (decision.first < 0 && decision.second < 0) AiSurrounder();
+	else if (PlaceChess(decision.first, decision.second, GetSelfPlayer() == 2))
 	{
 		if (IsOver())
 		{
@@ -148,6 +180,42 @@ void AChessBoardManager::MakeAiAction()
 			SetCurrentStatus(2);
 		}
 	}
+}
+
+void AChessBoardManager::AiSurrounder()
+{
+	AiSurroundered = true;
+	SetCurrentStatus(4);
+}
+
+void AChessBoardManager::UserSurrounder()
+{
+	UserSurroundered = true;
+	SetCurrentStatus(4);
+}
+
+int32 AChessBoardManager::GetWinner() {
+	if (IsAiSurroundered()) return GetSelfPlayer();
+	return board.getWinner(); 
+}
+
+bool AChessBoardManager::RetractChess()
+{
+	if (Chesses.Num() < 2 || RetractTimeRemain <= 0 || CurrentStatus != 2) return false;
+	RetractTimeRemain--;
+	board.retract();
+	board.retract();
+	HideLastIndicator();
+	Chesses[Chesses.Num() - 1]->Destroy();
+	Chesses[Chesses.Num() - 2]->Destroy();
+	Chesses.RemoveAt(Chesses.Num() - 1);
+	Chesses.RemoveAt(Chesses.Num() - 1);
+	if (Chesses.Num() > 0)
+	{
+		std::pair<int, int> las = board.getLastChess();
+		SetLastIndicator(las.first, las.second);
+	}
+	return true;
 }
 
 int32 AChessBoardManager::GetWinPositionX()
@@ -199,6 +267,7 @@ void AChessBoardManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	DefaultRetractTime = RetractTimeRemain;
 }
 
 // Called every frame
