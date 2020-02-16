@@ -11,7 +11,7 @@
 
 enum GRID_CNT
 {
-	GRID_N   = 15,
+	GRID_N   = 19,
 	GRID_DN  = 21
 };
 

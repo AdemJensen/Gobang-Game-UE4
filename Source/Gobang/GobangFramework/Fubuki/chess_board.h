@@ -2,17 +2,18 @@
 #define CHESSBOARD_H
 
 #include "base.h"
+#include "../Board.h"
 
 class ChessBoard
 {
 	private:
 
-		Chessid black_player_id;
+		Chessid black_player_id = 1;
 		Chessid board[GRID_N][GRID_N];
 
 	public:
 
-		ChessBoard();
+		ChessBoard() { }
 
 		void initBoard();
 		void putChess(int x, int y, Chessid id);

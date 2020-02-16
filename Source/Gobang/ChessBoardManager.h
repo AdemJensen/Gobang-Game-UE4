@@ -7,8 +7,10 @@
 #include "ChessBoardLocator.h"
 #include "GobangFramework/Board.h"
 #include "GobangFramework/KizunaAi/kizunaAi.h"
+#include "GobangFramework/Fubuki/aithread.h"
 #include "Engine.h"
 #include "ChessBoardIndicator.h"
+#include "ThreadAiWorker.h"
 #include "ChessBoardManager.generated.h"
 
 UCLASS()
@@ -161,7 +163,10 @@ public:
 
 	int32 DefaultRetractTime;
 
-
+	ThreadAiWorker AiWorker;
+	FTimerHandle AiTimerHandle;
+	FTimerDelegate AiTimerDelegate;
+	void AiTimerTask();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -170,6 +175,7 @@ protected:
 
 	KizunaAi MissAi;
 	KizunaAi PlayerHelper;
+	AiThread MissFubuki;
 
 	AActor* Triggers[BOARD_SIZE][BOARD_SIZE];
 

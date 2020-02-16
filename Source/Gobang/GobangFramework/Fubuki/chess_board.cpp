@@ -1,11 +1,6 @@
 #include "chess_board.h"
 #include <cstring>
 
-ChessBoard::ChessBoard()
-{
-
-}
-
 void ChessBoard::initBoard()
 {
 	memset(board, 0, sizeof(board));

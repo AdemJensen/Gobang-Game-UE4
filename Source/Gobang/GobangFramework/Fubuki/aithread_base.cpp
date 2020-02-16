@@ -1,6 +1,7 @@
 #include "aithread.h"
 #include <time.h>
 #include <stdlib.h>
+#include <utility>
 
 enum TIME_PARAM
 {
@@ -10,7 +11,7 @@ enum TIME_PARAM
 	LOSE_MIN_TIME = 2000
 };
 
-void AiThread::run()
+std::pair<int, int> AiThread::makeAction()
 {
 	srand(time(NULL));
 	//int start_time = QTime::currentTime().msecsSinceStartOfDay();
@@ -73,6 +74,7 @@ void AiThread::run()
 //	emit foundNextMove(ai_next_move);
 	round++;
 	prev_score = board_score;
+	return std::make_pair(ai_next_move.x, ai_next_move.y);
 }
 
 void AiThread::setIsBlack()

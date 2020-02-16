@@ -2,7 +2,9 @@
 #define AITHREAD_H
 
 #include "base.h"
+#include "../Board.h"
 #include "aithread_macro.h"
+#include <utility>
 
 class AiThread
 {
@@ -54,12 +56,15 @@ class AiThread
 		int L_TO_LEFT_COUNT[GRID_DN];
 		int R_TO_RIGHT_COUNT[GRID_DN];
 
-	protected:
-
-		// run函数
-		virtual void run();
-
 	public:
+		// run函数
+		std::pair<int, int> makeAction();
+
+		AiThread();
+
+		// Fubuki初始化系统
+		void initSystem();
+		void setPlayer(Board::ChessPlayer player);
 
 		// 初始化接口函数
 		void initHashTable();

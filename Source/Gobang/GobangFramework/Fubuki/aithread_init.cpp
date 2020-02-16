@@ -2,6 +2,25 @@
 #include "aithread_macro.h"
 #include <cstring>
 
+AiThread::AiThread()
+{
+	initSystem();
+}
+
+void AiThread::initSystem()
+{
+	initHashTable();
+	initBoard();
+	setNotWarned();
+	round = 0;
+}
+
+void AiThread::setPlayer(Board::ChessPlayer player)
+{
+	if (player == 1) setIsBlack();
+	else setNotBlack();
+}
+
 void AiThread::initHashTable()
 {
 	this->initMTable();
