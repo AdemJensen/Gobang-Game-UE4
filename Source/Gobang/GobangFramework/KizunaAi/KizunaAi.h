@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Board.h"
+#include "../Board.h"
 #include <utility>
 #include "ChessConstruction.h"
 #include "DecisionOffer.h"

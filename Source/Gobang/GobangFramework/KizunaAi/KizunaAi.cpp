@@ -1,5 +1,5 @@
 #include "KizunaAi.h"
-#include "board.h"
+#include "../Board.h"
 #include <iostream>
 #include <vector>
 #include <sstream>

@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "ChessBoardLocator.h"
 #include "GobangFramework/Board.h"
-#include "GobangFramework/kizunaAi.h"
+#include "GobangFramework/KizunaAi/kizunaAi.h"
 #include "Engine.h"
 #include "ChessBoardIndicator.h"
 #include "ChessBoardManager.generated.h"
