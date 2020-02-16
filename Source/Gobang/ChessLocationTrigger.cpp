@@ -57,7 +57,7 @@ void AChessLocationTrigger::TriggerClicked(UPrimitiveComponent* ClickedComp, FKe
 				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK3")));
 				FTimerHandle UniqueHandle;
 				FTimerDelegate RespawnDelegate = FTimerDelegate::CreateUObject(this, &AChessLocationTrigger::TimerAction);
-				GetWorldTimerManager().SetTimer(UniqueHandle, RespawnDelegate, 1, false);
+				GetWorldTimerManager().SetTimer(UniqueHandle, RespawnDelegate, OwnerBoard->GetAiDifficulty() > 2 ? 0.1 : 1, false);
 				//OwnerBoard->MakeAiAction();
 				//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK4")));
 			}

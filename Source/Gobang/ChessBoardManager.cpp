@@ -4,6 +4,7 @@
 #include "ChessBoardManager.h"
 #include "ChessLocationTrigger.h"
 #include "GobangChess.h"
+#include "ThreadAiWorker.h"
 
 // Sets default values
 AChessBoardManager::AChessBoardManager()
@@ -49,7 +50,16 @@ void AChessBoardManager::InitGameBoard(bool isViewOnBlack)
 	UserSurroundered = false;
 	board.clearBoard();
 	board.setBanMode(GetBanMode());
-	MissAi.setDifficulty(AiDifficulty);
+	if (AiDifficulty > 2)
+	{
+		MissFubuki = AiThread();
+		MissFubuki.setPlayer(GetSelfPlayer() == 1 ? 2 : 1);
+	}
+	else
+	{
+		MissAi.setDifficulty(AiDifficulty);
+	}
+	
 	PlayerHelper.setPlayer(GetSelfPlayer());
 	RetractTimeRemain = DefaultRetractTime;
 	EnableGameboard();
@@ -161,25 +171,59 @@ bool AChessBoardManager::PlaceChess(int32 X, int32 Y, bool IsBlack)
 	Indicator_Last->SetIndicatorVisibility(true);
 	SetLastIndicator(X, Y);
 	Chesses.Add(ChessObj);
+	if (AiDifficulty > 2) MissFubuki.putChess(X, Y, (IsBlack ? 1 : 2));
 	return true;
+}
+
+void AChessBoardManager::AiTimerTask()
+{
+	if (AiWorker.isOver())
+	{
+		std::pair<int, int> decision = AiWorker.getResult();
+		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Robot placed at (%d, %d), Color %s"), decision.first, decision.second, GetSelfPlayer() == 2 ? TEXT("Black") : TEXT("White")));
+		if (!board.isAvailable(decision.first, decision.second, GetSelfPlayer() == 1 ? 2 : 1)) AiSurrounder();
+		else if (PlaceChess(decision.first, decision.second, GetSelfPlayer() == 2))
+		{
+			if (IsOver())
+			{
+				SetCurrentStatus(4);
+			}
+			else
+			{
+				SetCurrentStatus(2);
+			}
+		}
+		GetWorldTimerManager().ClearTimer(AiTimerHandle);
+	}
 }
 
 void AChessBoardManager::MakeAiAction()
 {
-	std::pair<int, int> decision = MissAi.makeAction(board);
-	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Robot placed at (%d, %d), Color %s"), decision.first, decision.second, GetSelfPlayer() == 2 ? TEXT("Black") : TEXT("White")));
-	if (decision.first < 0 && decision.second < 0) AiSurrounder();
-	else if (PlaceChess(decision.first, decision.second, GetSelfPlayer() == 2))
+	if (AiDifficulty > 2) {
+		AiWorker = ThreadAiWorker();
+		AiWorker.initParam(&MissFubuki);
+		AiWorker.start();
+		AiTimerDelegate = FTimerDelegate::CreateUObject(this, &AChessBoardManager::AiTimerTask);
+		GetWorldTimerManager().SetTimer(AiTimerHandle, AiTimerDelegate, 0.5, true);
+	}
+	else
 	{
-		if (IsOver())
+		std::pair<int, int> decision = MissAi.makeAction(board);
+		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Robot placed at (%d, %d), Color %s"), decision.first, decision.second, GetSelfPlayer() == 2 ? TEXT("Black") : TEXT("White")));
+		if (!board.isAvailable(decision.first, decision.second, GetSelfPlayer() == 1 ? 2 : 1)) AiSurrounder();
+		else if (PlaceChess(decision.first, decision.second, GetSelfPlayer() == 2))
 		{
-			SetCurrentStatus(4);
-		}
-		else
-		{
-			SetCurrentStatus(2);
+			if (IsOver())
+			{
+				SetCurrentStatus(4);
+			}
+			else
+			{
+				SetCurrentStatus(2);
+			}
 		}
 	}
+	
 }
 
 void AChessBoardManager::AiSurrounder()
@@ -203,8 +247,20 @@ bool AChessBoardManager::RetractChess()
 {
 	if (Chesses.Num() < 2 || RetractTimeRemain <= 0 || CurrentStatus != 2) return false;
 	RetractTimeRemain--;
-	board.retract();
-	board.retract();
+	if (AiDifficulty > 2)
+	{
+		std::pair<int, int> la = board.getLastChess();
+		MissFubuki.takeChess(la.first, la.second);
+		board.retract();
+		la = board.getLastChess();
+		MissFubuki.takeChess(la.first, la.second);
+		board.retract();
+	}
+	else
+	{
+		board.retract();
+		board.retract();
+	}
 	HideLastIndicator();
 	Chesses[Chesses.Num() - 1]->Destroy();
 	Chesses[Chesses.Num() - 2]->Destroy();
