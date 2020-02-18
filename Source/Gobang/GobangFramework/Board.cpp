@@ -152,11 +152,12 @@ int GF(int ori, int diff, int scale)
 {
 	return ori + diff * scale;
 }
-bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
+int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 {
+	if (getBoard(x, y) != Board::VOIDED) return 1;
 	if (useBan && player == Board::PLAYER_1)
 	{
-		if (getBoard(x, y) != Board::VOIDED) return false;
+		
 		// Judge Long-link.
 		int lens1[] = { 0, 0, 0, 0 };
 		for (int i = 0; i < 4; i++)
@@ -174,7 +175,7 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 				else break;
 			}
 		}
-		for (int i = 0; i < 4; i++) if (lens1[i] + 1 >= 6) return false;
+		for (int i = 0; i < 4; i++) if (lens1[i] + 1 >= 6) return 2;
 
 		// Judge if can win.
 		for (int i = 0; i < 4; i++)
@@ -193,7 +194,7 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 				else break;
 			}
 		}
-		for (int i = 0; i < 4; i++) if (lens1[i] + 1 == 5) return true;
+		for (int i = 0; i < 4; i++) if (lens1[i] + 1 == 5) return 0;
 		
 		int jud_type[] = { 0, 0, 0, 0 }; // 0 = none, 1 = four_round, 2 = live_three;
 		// Judge four_round
@@ -293,12 +294,9 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 				live_three_num++;
 			}
 		}
-		if (live_three_num >= 2) return false;
-		if (forster_four_num >= 2) return false;
-		return true;
+		if (live_three_num >= 2) return 2;
+		if (forster_four_num >= 2) return 2;
+		return 0;
 	}
-	else
-	{
-		return Board::board[x][y] == 0;
-	}
+	return 1;
 }

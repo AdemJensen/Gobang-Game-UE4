@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "GobangPlayerController.h"
 #include "GobangPlayerPawn.h"
-#include "ChessBoardManager.h"
+#include "Managers/BoardManagerBase.h"
 #include "GobangGameModeBase.generated.h"
 
 /**
@@ -20,7 +20,7 @@ class GOBANG_API AGobangGameModeBase : public AGameModeBase
 public:
 	AGobangGameModeBase();
 
-	AChessBoardManager* Manager;
+	ABoardManagerBase* Manager;
 
 protected:
 	// Called when the game starts or when spawned

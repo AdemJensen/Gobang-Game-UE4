@@ -14,11 +14,11 @@ AGobangGameModeBase::AGobangGameModeBase()
 void AGobangGameModeBase::BeginPlay()
 {
 	TArray<AActor*> Managers;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AChessBoardManager::StaticClass(), Managers);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ABoardManagerBase::StaticClass(), Managers);
 
 	if (Managers.Num() != 0)
 	{
-		Manager = Cast<AChessBoardManager>(Managers[0]);
+		Manager = Cast<ABoardManagerBase>(Managers[0]);
 	}
 
 }

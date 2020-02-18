@@ -88,8 +88,10 @@ public:
 	
 	/*
 	 * To judge if a location is able to place a chess or not.
-	 * return true if the board is empty.
+	 * 0: Success.
+	 * 1: Position taken.
+	 * 2: Banned.
 	 */
-	bool isAvailable(int x, int y, Board::ChessPlayer player) const;
+	int isAvailable(int x, int y, Board::ChessPlayer player) const;
 	
 };
