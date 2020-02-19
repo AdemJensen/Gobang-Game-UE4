@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../Basics/BoardLocator.h"
+#include "../Basics/ChessType.h"
 #include "../GobangFramework/Board.h"
 #include "../GobangFramework/KizunaAi/kizunaAi.h"
 #include "../GobangFramework/Fubuki/aithread.h"
@@ -25,6 +26,7 @@ public:
 
 	// Sets default values for this actor's properties
 	ABoardManagerBase();
+	~ABoardManagerBase();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")	
 		void InitGameBoard(ABoardLocator* LU, ABoardLocator* RD, bool bBanModeOn);
@@ -62,7 +64,7 @@ public:
 		bool GetBanMode() { return bUseBanMode; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
-		int IsAvailable(int X, int Y, int player) { return board.isAvailable(X, Y, player); }
+		int IsAvailable(int X, int Y, EChessType ChessType) { return board.isAvailable(X, Y, ChessType == EChessType::BLACK ? 1 : 2); }
 
 	FIntPoint WinPos;
 	int32 WinDir = -1;

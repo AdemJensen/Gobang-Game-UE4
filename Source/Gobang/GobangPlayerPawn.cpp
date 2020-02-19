@@ -4,6 +4,7 @@
 #include "GobangPlayerPawn.h"
 #include "GobangGameModeBase.h"
 #include "Basics/BoardTrigger.h"
+#include "Basics/ProgramStage.h"
 
 // Sets default values
 AGobangPlayerPawn::AGobangPlayerPawn()
@@ -31,31 +32,31 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 	UWorld* TheWorld = GetWorld();
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
-	//if (MyGameMode->Manager->GetCurrentStatus() < 2) return;
-	//TheWorld->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
-	//if (bDrawDebugHelpers)	// Onlu used via VR.
-	//{
-	//	DrawDebugLine(TheWorld, Start, HitResult.Location, FColor::Red);
-	//	DrawDebugSolidBox(TheWorld, HitResult.Location, FVector(20.0f), FColor::Red);
-	//}
-	//if (HitResult.Actor.IsValid())
-	//{
-	//	AActor* HitActor = HitResult.Actor.Get();
-	//	ABoardTrigger* BoardIndicator = Cast<ABoardTrigger>(HitActor);
-	//	
-	//	if (BoardIndicator != nullptr)
-	//	{
-	//		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
-	//		MyGameMode->Manager->SetPlayerIndicator(
-	//			BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
-	//			MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer())
-	//		);
-	//	}
-	//	else
-	//	{
-	//		MyGameMode->Manager->HidePlayerIndicator();
-	//	}
-	//}
+	if (MyGameMode->GameManager->GetProgramStage() != EProgramStage::IN_GAME) return;
+	TheWorld->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
+	if (bDrawDebugHelpers)	// Onlu used via VR.
+	{
+		DrawDebugLine(TheWorld, Start, HitResult.Location, FColor::Red);
+		DrawDebugSolidBox(TheWorld, HitResult.Location, FVector(20.0f), FColor::Red);
+	}
+	if (HitResult.Actor.IsValid())
+	{
+		AActor* HitActor = HitResult.Actor.Get();
+		ABoardTrigger* BoardIndicator = Cast<ABoardTrigger>(HitActor);
+		
+		if (BoardIndicator != nullptr)
+		{
+			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
+			MyGameMode->GameManager->SetPlayerIndicator(
+				BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
+				MyGameMode->GameManager->BoardManager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->GameManager->PublicManager->GetSelfChess()) == 0
+			);
+		}
+		else
+		{
+			MyGameMode->GameManager->HidePlayerIndicator();
+		}
+	}
 }
 
 // Called every frame

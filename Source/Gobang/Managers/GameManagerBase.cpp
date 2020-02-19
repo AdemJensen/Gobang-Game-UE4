@@ -2,6 +2,7 @@
 
 
 #include "GameManagerBase.h"
+#include "../Basics/Chess.h"
 
 // Sets default values
 AGameManagerBase::AGameManagerBase()
@@ -27,26 +28,24 @@ Return:
 	2: The Board Manager is invalid.
 	3: The Public Manager is invalid.
 */
-int AGameManagerBase::OnGameStart(bool bIsServerSide)
+int AGameManagerBase::OnGameStart()
 {
 	UWorld* TheWorld = GetWorld();
 	if (TheWorld == nullptr) return 1;
-	if (bIsServerSide)
-	{
+	
+	AActor* Temp = UGameplayStatics::GetActorOfClass(TheWorld, ABoardManagerBase::StaticClass());
+	if (Temp == nullptr) return 2;
+	BoardManager = Cast<ABoardManagerBase>(Temp);
+	if (BoardManager == nullptr) return 2;
 
-	}
-	else
-	{
-		AActor* Temp = UGameplayStatics::GetActorOfClass(TheWorld, ABoardManagerBase::StaticClass());
-		if (Temp == nullptr) return 2;
-		BoardManager = Cast<ABoardManagerBase>(Temp);
-		if (BoardManager == nullptr) return 2;
+	Temp = UGameplayStatics::GetActorOfClass(TheWorld, APublicManagerBase::StaticClass());
+	if (Temp == nullptr) return 3;
+	PublicManager = Cast<APublicManagerBase>(Temp);
+	if (PublicManager == nullptr) return 3;
 
-		Temp = UGameplayStatics::GetActorOfClass(TheWorld, APublicManagerBase::StaticClass());
-		if (Temp == nullptr) return 3;
-		PublicManager = Cast<APublicManagerBase>(Temp);
-		if (PublicManager == nullptr) return 3;
-	}
+	TArray<AActor*> TempArr;
+	UGameplayStatics::GetAllActorsOfClass(TheWorld, AChess::StaticClass(), TempArr);
+	for (int i = 0; i < TempArr.Num(); i++) TempArr[i]->Destroy();
 
 	return 0;
 }

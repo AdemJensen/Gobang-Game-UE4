@@ -53,7 +53,7 @@ std::string getChessConsStr(ChessConstruction co)
 
 void addVal(KizunaAi* ai, KizunaAiCache< std::pair<bool, ChessConstruction>, DecisionOffer>* cache, const Board& board, std::pair<bool, ChessConstruction> key, DecisionOffer val)
 {
-	if (Board::onBoard(val.getLocation().first, val.getLocation().second) && board.isAvailable(val.getLocation().first, val.getLocation().second, ai->getPlayer()))
+	if (Board::onBoard(val.getLocation().first, val.getLocation().second) && board.isAvailable(val.getLocation().first, val.getLocation().second, ai->getPlayer()) == 0)
 	{
 		cache->addVal(key, val);
 		if (SHOW_DETECTION_INFO)
@@ -220,7 +220,7 @@ std::pair<int, int> KizunaAi::makeAction(const Board& board)
 		if (board.isEmpty())
 		{
 			std::pair<int, int> selected = std::make_pair(board.getBoardSize() / 2, board.getBoardSize() / 2);
-			if (board.isAvailable(selected.first, selected.second, getPlayer())) return selected;
+			if (board.isAvailable(selected.first, selected.second, getPlayer()) == 0) return selected;
 			else return std::make_pair(-1, -1);
 		}
 
@@ -231,7 +231,7 @@ std::pair<int, int> KizunaAi::makeAction(const Board& board)
 		{
 			for (int j = 0; j < board.getBoardSize(); j++)
 			{
-				if (board.isAvailable(i, j, getPlayer()))
+				if (board.isAvailable(i, j, getPlayer()) == 0)
 				{
 					int score = 0;
 					if (board.getBoard(i - 1, j - 1) == Board::OUTED) score -= 1;

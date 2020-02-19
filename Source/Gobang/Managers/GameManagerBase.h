@@ -40,7 +40,7 @@ public:
 		- 3: The Public Manager is invalid.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		int OnGameStart(bool bIsServerSide);
+		int OnGameStart();
 
 	// Indicators
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")

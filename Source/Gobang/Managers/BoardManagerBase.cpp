@@ -13,16 +13,27 @@ ABoardManagerBase::ABoardManagerBase()
 
 }
 
+ABoardManagerBase::~ABoardManagerBase()
+{
+	UWorld* TheWorld = GetWorld();
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		for (int j = 0; j < BOARD_SIZE; j++)
+		{
+			if (Triggers[i][j] != nullptr)
+			{
+				Triggers[i][j]->Destroy();
+			}
+		}
+	}
+}
+
 void ABoardManagerBase::InitGameBoard(ABoardLocator* LU, ABoardLocator* RD, bool bBanModeOn)
 {
 	UWorld* TheWorld = GetWorld();
 	Location_LU = LU->Location->GetComponentLocation();
 	Location_RD = RD->Location->GetComponentLocation();
-	for (int i = 0; i < Chesses.Num(); i++)
-	{
-		Chesses[i]->Destroy();
-	}
-	Chesses = TArray<AActor*>();
+	
 
 	board.clearBoard();
 	board.setBanMode(bBanModeOn);
