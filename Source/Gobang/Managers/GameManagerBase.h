@@ -56,6 +56,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
 		void HideLastIndicator();
 
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetLastPlayChessType(EChessType LastType) { LastPlayChessType = LastType; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		EChessType GetLastPlayChessType() { return LastPlayChessType; }
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Game Info")
@@ -73,6 +78,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
 		USoundWave* PlaceChessAudio;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
+		EChessType LastPlayChessType = EChessType::BLACK;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

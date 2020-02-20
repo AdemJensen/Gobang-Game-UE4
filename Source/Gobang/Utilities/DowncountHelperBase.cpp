@@ -23,6 +23,10 @@ void ADowncountHelperBase::StartDowncount(float TotalTime, float UnitTime)
 	bRunning = true;
 }
 
+void ADowncountHelperBase::OnRemainChanged_Implementation(float TimeRemain) { }
+
+void ADowncountHelperBase::OnTimeUp_Implementation() { }
+
 // Called when the game starts
 void ADowncountHelperBase::BeginPlay()
 {

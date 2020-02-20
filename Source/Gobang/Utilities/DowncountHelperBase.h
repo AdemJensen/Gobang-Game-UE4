@@ -20,11 +20,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void StartDowncount(float TotalTime, float UnitTime = 1.0f);
 
-	UFUNCTION(BlueprintCallable, Category = "Actions")
-		virtual void OnRemainChanged(float TimeRemain) { }
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")
+		void OnRemainChanged(float TimeRemain);
 
-	UFUNCTION(BlueprintCallable, Category = "Actions")
-		virtual void OnTimeUp() { }
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")
+		void OnTimeUp();
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void Interrupt() { bRunning = false; }
