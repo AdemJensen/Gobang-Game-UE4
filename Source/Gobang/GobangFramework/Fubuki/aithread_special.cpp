@@ -3,7 +3,7 @@
 #include <ctime>
 #include <stdlib.h>
 
-#define BOARD_CTR 7
+#define BOARD_CTR (GRID_N / 2)
 
 void AiThread::firstRound()
 {
