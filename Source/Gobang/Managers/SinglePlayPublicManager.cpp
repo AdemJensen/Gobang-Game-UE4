@@ -3,7 +3,7 @@
 
 #include "SinglePlayPublicManager.h"
 
-void ASinglePlayPublicManager::InitSinglePlayPublicManager(int32 DifficultyLevel, int32 BanModeLevel, int32 RetractTimesLevel, int32 RoundTimeLimitLevel, int32 HintCoolDownLevel)
+ASinglePlayPublicManager* ASinglePlayPublicManager::InitSinglePlayPublicManager(int32 DifficultyLevel, int32 BanModeLevel, int32 HintCoolDownLevel, int32 RetractTimesLevel, int32 RoundTimeLimitLevel)
 {
 	SetAiDifficulty(DifficultyLevel + 1);
 	SetBanMode((EBanMode) (BanModeLevel + 1));
@@ -64,4 +64,5 @@ void ASinglePlayPublicManager::InitSinglePlayPublicManager(int32 DifficultyLevel
 	default:
 		SetRoundTimeLimit(0.0f);
 	}
+	return this;
 }

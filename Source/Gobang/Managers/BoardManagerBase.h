@@ -12,7 +12,6 @@
 #include "Engine.h"
 #include "../Basics/BoardIndicator.h"
 #include "../Basics/ChessType.h"
-#include "../Utilities/ThreadAiWorker.h"
 #include "BoardManagerBase.generated.h"
 
 UCLASS()

@@ -26,15 +26,15 @@ public:
 
 	FChangeUiAction ChangeUiAction;
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Game Info")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		ABoardManagerBase* BoardManager;	// Only valid when at game.
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Game Info")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		APublicManagerBase* PublicManager;	// Only valid when at game.
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Game Info")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		ASinglePlayPublicManager* LastSinglePlayPublicManager;	// Valid in the first place.
-	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Game Info")
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		APublicManagerBase* LastMultiPlayPublicManager;	// Valid in the first place.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")

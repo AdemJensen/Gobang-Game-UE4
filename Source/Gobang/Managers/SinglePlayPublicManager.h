@@ -25,7 +25,7 @@ public:
 		int32 GetAiDifficulty() { return AiDifficulty; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
-		void InitSinglePlayPublicManager(int32 DifficultyLevel, int32 BanModeLevel, int32 RetractTimesLevel, int32 RoundTimeLimitLevel, int32 HintCoolDownLevel);
+		ASinglePlayPublicManager* InitSinglePlayPublicManager(int32 DifficultyLevel, int32 BanModeLevel, int32 HintCoolDownLevel, int32 RetractTimesLevel, int32 RoundTimeLimitLevel);
 
 protected:
 
