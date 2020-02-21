@@ -83,6 +83,19 @@ void AGameManagerBase::HideLastIndicator() {
 	Indicator_Last->SetIndicatorVisibility(false);
 }
 
+void AGameManagerBase::OnRoundOver()
+{
+	ChangeUiAction.Broadcast(nullptr);
+}
+
+void AGameManagerBase::OnSurrounder(EChessType SurrounderTarget)
+{
+}
+
+void AGameManagerBase::OnUnexpectedAction(EUnexpectedGameActionType Type)
+{
+}
+
 // Called when the game starts or when spawned
 void AGameManagerBase::BeginPlay()
 {

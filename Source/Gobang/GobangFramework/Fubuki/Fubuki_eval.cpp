@@ -1,6 +1,6 @@
-#include "aithread.h"
+#include "Fubuki.h"
 
-int AiThread::evalBoard()
+int Fubuki::evalBoard()
 {
 	int ai_sum = 0, hu_sum = 0;
 	EVAL(ai_sum, hu_sum);
@@ -19,7 +19,7 @@ int AiThread::evalBoard()
 }
 
 
-int AiThread::evalMinMaxPrior(const int x, const int y, const Chessid id) const
+int Fubuki::evalMinMaxPrior(const int x, const int y, const Chessid id) const
 {
 	int min_max_prior = 0;
 	__int32 idl2y = id << 2*y;
@@ -70,7 +70,7 @@ int AiThread::evalMinMaxPrior(const int x, const int y, const Chessid id) const
 }
 
 
-int AiThread::evalKillPrior(const int x, const int y, const Chessid id) const
+int Fubuki::evalKillPrior(const int x, const int y, const Chessid id) const
 {
 	int kill_prior = 0;
 	__int32 idl2y = id << 2*y;
@@ -122,7 +122,7 @@ int AiThread::evalKillPrior(const int x, const int y, const Chessid id) const
 }
 
 
-int AiThread::evalKilledScore(Chessid cur_player, int depth) const
+int Fubuki::evalKilledScore(Chessid cur_player, int depth) const
 {
 	if (cur_player==AI_CHESS)
 	{

@@ -1,4 +1,4 @@
-#include "aithread.h"
+#include "Fubuki.h"
 
 #define BASE_DEPTH	4
 #define KILL_DEPTH	9
@@ -13,7 +13,7 @@
 #define swapChoice(x, y) do{Choice tp=x; x=y; y=tp;}while(0)
 
 
-int AiThread::minMaxSearch(const Chessid cur_player, const int depth, int alpha, int beta)
+int Fubuki::minMaxSearch(const Chessid cur_player, const int depth, int alpha, int beta)
 {
 	if ( depth )					// depth必须>0，否则无法获取必杀点的坐标就返回了
 	{
@@ -100,7 +100,7 @@ int AiThread::minMaxSearch(const Chessid cur_player, const int depth, int alpha,
 }
 
 
-int AiThread::killSearch(const Chessid cur_player, const int depth, int alpha, int beta)
+int Fubuki::killSearch(const Chessid cur_player, const int depth, int alpha, int beta)
 {
 	int killed_score = evalKilledScore(cur_player, depth);
 	if (killed_score)
@@ -183,7 +183,7 @@ int AiThread::killSearch(const Chessid cur_player, const int depth, int alpha, i
 }
 
 
-int AiThread::resSearch(const Chessid cur_player, const int depth, int alpha, int beta)
+int Fubuki::resSearch(const Chessid cur_player, const int depth, int alpha, int beta)
 {
 	int killed_score = evalKilledScore(cur_player, depth);
 	if (killed_score)
@@ -264,7 +264,7 @@ int AiThread::resSearch(const Chessid cur_player, const int depth, int alpha, in
 }
 
 
-int AiThread::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
+int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 {
 	if (cur_player == AI_CHESS && all_type[I_HU_P4])
 	{
@@ -434,7 +434,7 @@ int AiThread::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) cons
 
 
 // 眠活三优化（当对方没有P4而有活三（甚至双活三）时，我方只能走：①对方活三的前二防守点 ②我方眠三进攻点 ③对方活三的第三防守点）
-int AiThread::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
+int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 {
 	if (cur_player == AI_CHESS && all_type[I_HU_A3])
 	{
@@ -936,7 +936,7 @@ exit_aia3_hus3:
 		return 0;
 }
 
-int AiThread::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
+int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 {
 	if (cur_player == AI_CHESS)
 	{
@@ -1403,7 +1403,7 @@ int AiThread::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) cons
 }
 
 
-int AiThread::getMinMaxSearchChoices(Choice *choices_buffer, Chessid cur_player) const
+int Fubuki::getMinMaxSearchChoices(Choice *choices_buffer, Chessid cur_player) const
 {
 #ifdef __OPEN_EP4
 	int enemy_p4_cnt = this->findEnemyP4(choices_buffer, cur_player);
@@ -1457,7 +1457,7 @@ int AiThread::getMinMaxSearchChoices(Choice *choices_buffer, Chessid cur_player)
 	return cnt;
 }
 
-int AiThread::getKillSearchChoices(Choice *choices_buffer, Chessid cur_player) const
+int Fubuki::getKillSearchChoices(Choice *choices_buffer, Chessid cur_player) const
 {
 #ifdef __OPEN_EP4
 	int enemy_p4_cnt = this->findEnemyP4(choices_buffer, cur_player);
@@ -1515,7 +1515,7 @@ int AiThread::getKillSearchChoices(Choice *choices_buffer, Chessid cur_player) c
 	return cnt;
 }
 
-void AiThread::myQuickSort(Choice *a, int n) const
+void Fubuki::myQuickSort(Choice *a, int n) const
 {
 	if (n <= 1)
 		return;
@@ -1557,7 +1557,7 @@ void AiThread::myQuickSort(Choice *a, int n) const
 	myQuickSort(a+i+1, n-i-1);
 }
 
-void AiThread::algoDebuging() const
+void Fubuki::algoDebuging() const
 {
 //	qDebug("Dep: %d %d %d", BASE_DEPTH, KILL_DEPTH, RES_DEPTH);
 //	qDebug("NC : %d", NEAR_CNT);

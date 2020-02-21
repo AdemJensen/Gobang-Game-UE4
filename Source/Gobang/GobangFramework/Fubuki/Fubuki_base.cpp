@@ -1,4 +1,4 @@
-#include "aithread.h"
+#include "Fubuki.h"
 #include <time.h>
 #include <stdlib.h>
 #include <utility>
@@ -11,7 +11,7 @@ enum TIME_PARAM
 	LOSE_MIN_TIME = 2000
 };
 
-std::pair<int, int> AiThread::makeAction()
+std::pair<int, int> Fubuki::makeAction()
 {
 	srand(time(NULL));
 	//int start_time = QTime::currentTime().msecsSinceStartOfDay();
@@ -77,37 +77,37 @@ std::pair<int, int> AiThread::makeAction()
 	return std::make_pair(ai_next_move.x, ai_next_move.y);
 }
 
-void AiThread::setIsBlack()
+void Fubuki::setIsBlack()
 {
 	is_black = true;
 }
 
-void AiThread::setNotBlack()
+void Fubuki::setNotBlack()
 {
 	is_black = false;
 }
 
-void AiThread::setNotWarned()
+void Fubuki::setNotWarned()
 {
 	warned = false;
 }
 
-void AiThread::resetRound()
+void Fubuki::resetRound()
 {
 	round = 1;
 }
 
-bool AiThread::win() const
+bool Fubuki::win() const
 {
 	return (bool) all_type[I_AI_C5];
 }
 
-bool AiThread::lose() const
+bool Fubuki::lose() const
 {
 	return (bool) all_type[I_HU_C5];
 }
 
-void AiThread::printChessType()
+void Fubuki::printChessType()
 {
 	/*qDebug() << "C5A4" << all_type[1] << all_type[2] << all_type[3] << all_type[4];
 	qDebug() << "P4A3" << all_type[5] << all_type[6] << all_type[7] << all_type[8];
@@ -115,7 +115,7 @@ void AiThread::printChessType()
 	qDebug() << "S2A1" << all_type[13] << all_type[14] << all_type[15] << all_type[16];*/
 }
 
-void AiThread::putChess(const int x, const int y, const Chessid id)
+void Fubuki::putChess(const int x, const int y, const Chessid id)
 {
 //	xor_sum ^= zobrist[id][y][x];
 	mirror_board[y][x] = id;
@@ -148,7 +148,7 @@ void AiThread::putChess(const int x, const int y, const Chessid id)
 
 
 
-void AiThread::takeChess(const int x, const int y)
+void Fubuki::takeChess(const int x, const int y)
 {
 //	xor_sum ^= zobrist[id][y][x];
 	mirror_board[y][x] = 0;
@@ -179,7 +179,7 @@ void AiThread::takeChess(const int x, const int y)
 	updateChessType(x, y);
 }
 
-void AiThread::updateChessType(const int x, const int y)
+void Fubuki::updateChessType(const int x, const int y)
 {
 	int count, i;
 	__int32 temp1 = col_type[x];

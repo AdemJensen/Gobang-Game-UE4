@@ -3,10 +3,10 @@
 
 #include "base.h"
 #include "../Board.h"
-#include "aithread_macro.h"
+#include "Fubuki_macro.h"
 #include <utility>
 
-class AiThread
+class Fubuki
 {
 
 	private:
@@ -60,7 +60,7 @@ class AiThread
 		// run函数
 		std::pair<int, int> makeAction();
 
-		AiThread();
+		Fubuki();
 
 		// Fubuki初始化系统
 		void initSystem();

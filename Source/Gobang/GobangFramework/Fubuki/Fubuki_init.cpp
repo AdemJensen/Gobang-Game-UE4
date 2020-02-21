@@ -1,13 +1,13 @@
-#include "aithread.h"
-#include "aithread_macro.h"
+#include "Fubuki.h"
+#include "Fubuki_macro.h"
 #include <cstring>
 
-AiThread::AiThread()
+Fubuki::Fubuki()
 {
 	initSystem();
 }
 
-void AiThread::initSystem()
+void Fubuki::initSystem()
 {
 	initHashTable();
 	initBoard();
@@ -15,19 +15,19 @@ void AiThread::initSystem()
 	round = 0;
 }
 
-void AiThread::setPlayer(Board::ChessPlayer player)
+void Fubuki::setPlayer(Board::ChessPlayer player)
 {
 	if (player == 1) setIsBlack();
 	else setNotBlack();
 }
 
-void AiThread::initHashTable()
+void Fubuki::initHashTable()
 {
 	this->initMTable();
 	this->initCountTable();
 }
 
-void AiThread::initBoard()
+void Fubuki::initBoard()
 {
 	mem0(mirror_board);
 
@@ -49,7 +49,7 @@ void AiThread::initBoard()
 }
 
 
-void AiThread::initMTable()
+void Fubuki::initMTable()
 {
 	mem0(M_TABLE);
 	memf1(P4_KEY_POS_TABLE);
@@ -229,7 +229,7 @@ void AiThread::initMTable()
 }
 
 
-void AiThread::initCountTable()
+void Fubuki::initCountTable()
 {
 	memset(XY_TO_LEFT_COUNT, 0, sizeof(XY_TO_LEFT_COUNT));
 	memset(XY_TO_RIGHT_COUNT, 0, sizeof(XY_TO_RIGHT_COUNT));

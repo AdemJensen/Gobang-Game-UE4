@@ -8,7 +8,7 @@
 #include "../Basics/ChessType.h"
 #include "../GobangFramework/Board.h"
 #include "../GobangFramework/KizunaAi/kizunaAi.h"
-#include "../GobangFramework/Fubuki/aithread.h"
+#include "../GobangFramework/Fubuki/Fubuki.h"
 #include "Engine.h"
 #include "../Basics/BoardIndicator.h"
 #include "../Basics/ChessType.h"

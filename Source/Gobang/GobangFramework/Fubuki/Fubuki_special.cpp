@@ -1,11 +1,11 @@
-#include "aithread.h"
+#include "Fubuki.h"
 
 #include <ctime>
 #include <stdlib.h>
 
 #define BOARD_CTR (GRID_N / 2)
 
-void AiThread::firstRound()
+void Fubuki::firstRound()
 {
 	// 第一轮，若AI先手，则选择棋盘正中心；若后手但对手没有落子在正中心，也选择正中心
 	if (mirror_board[BOARD_CTR][BOARD_CTR] == NO_CHESS)
@@ -26,7 +26,7 @@ void AiThread::firstRound()
 	//this->msleep(300);
 }
 
-void AiThread::secondRound()
+void Fubuki::secondRound()
 {
 	int x, y;
 	bool found;
@@ -85,7 +85,7 @@ void AiThread::secondRound()
 	//this->msleep(800);
 }
 
-void AiThread::highestPriorityAttack()
+void Fubuki::highestPriorityAttack()
 {
 	for (int i=0; i<GRID_N; i++)
 	{
@@ -106,7 +106,7 @@ void AiThread::highestPriorityAttack()
 	//emit findingNextMove(ai_next_move);
 }
 
-void AiThread::highestPriorityDefence()
+void Fubuki::highestPriorityDefence()
 {
 	for (int i=0; i<GRID_N; i++)
 	{

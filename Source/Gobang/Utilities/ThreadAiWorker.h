@@ -3,18 +3,18 @@
 #include "CoreMinimal.h"
 #include "HAL/RunnableThread.h"
 #include "HAL/Runnable.h"
-#include "../GobangFramework/Fubuki/aithread.h"
+#include "../GobangFramework/Fubuki/Fubuki.h"
 
 class GOBANG_API ThreadAiWorker : public FRunnable
 {
 private:
     bool isFinished = false;
-    AiThread* Ai;
+    Fubuki* Ai;
     std::pair<int, int> result = std::pair<int, int>(-1, -1);
     FRunnableThread* Thread;
 
 public:
-    void initParam(AiThread* AiObj) { Ai = AiObj; }
+    void initParam(Fubuki* AiObj) { Ai = AiObj; }
 
     void start() { Thread = FRunnableThread::Create(this, TEXT("Ai Worker"), 0, TPri_Normal); }
 
