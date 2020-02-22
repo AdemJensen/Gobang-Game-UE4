@@ -7,17 +7,20 @@
 class GOBANG_API FThreadWorkerBase : public FRunnable
 {
 protected:
-    bool isFinished = false;
+    bool bFinished = false;
     FRunnableThread* Thread;
 
-public:
-    void start() { Thread = FRunnableThread::Create(this, TEXT("Thread Worker"), 0, TPri_Normal); }
-
     // Begin FRunnable interface.
+    virtual uint32 Run();
     virtual bool Init() { return true; }
-    virtual uint32 Run() = 0;
-    virtual void Stop() { isFinished = true; }
+    virtual void Stop();
     // End FRunnable interface
-    virtual bool isOver() { return isFinished; }
+
+    virtual uint32 RunProcess() = 0;
+
+public:
+    void Start();
+    void End();
+    virtual bool IsOver() { return bFinished; }
 };
 

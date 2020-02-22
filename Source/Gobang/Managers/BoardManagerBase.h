@@ -76,7 +76,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		FVector GetAbsolutePosition(int32 X, int32 Y, float Z_Offset = 0);
 
-	
+	Board* GetBoardObj() { return &board; }
 
 protected:
 	// Called when the game starts or when spawned

@@ -4,6 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GamePlayerBase.h"
+#include "../Utilities/ThreadWorkerBase.h"
+#include "../GobangFramework/Fubuki/Fubuki.h"
+#include "../GobangFramework/KizunaAi/KizunaAi.h"
+#include "TimerManager.h"
 #include "AiGamePlayer.generated.h"
 
 /**
@@ -15,6 +19,11 @@ class GOBANG_API AAiGamePlayer : public AGamePlayerBase
 	GENERATED_BODY()
 	
 public:
+	
+	virtual void OnGameStart();
+	virtual void OnRoundStart();
+	virtual void OnInterrupt();
+	virtual void OnRetract(FIntPoint RetractPosition);
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetAiLevel(int32 Level) { AiLevel = Level; }
@@ -25,5 +34,14 @@ protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		int32 AiLevel = 2;
+
+	TSharedPtr<FThreadWorkerBase> Worker;
+
+	KizunaAi MissAi;
+	Fubuki MissFu;
+
+	FTimerHandle AiTimerHandle;
+	FTimerDelegate AiTimerDelegate;
+	void AiTimerTask();
 
 };

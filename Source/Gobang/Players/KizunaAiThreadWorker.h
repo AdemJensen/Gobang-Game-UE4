@@ -2,21 +2,21 @@
 
 #include "CoreMinimal.h"
 #include "../Utilities/ThreadWorkerBase.h"
-#include "../GobangFramework/Fubuki/Fubuki.h"
+#include "../GobangFramework/KizunaAi/KizunaAi.h"
+#include "../GobangFramework/Board.h"
 
 class GOBANG_API FKizunaAiThreadWorker : public FThreadWorkerBase
 {
 protected:
-    bool bFinished = false;
-    Fubuki* Ai;
+    KizunaAi* ai;
+    Board* board;
     std::pair<int, int> Result = std::pair<int, int>(-1, -1);
 
 public:
-    void InitParam(Fubuki* AiObj) { Ai = AiObj; }
+    void InitParam(KizunaAi* AiObj, Board* BoardObj) { ai = AiObj; board = BoardObj; }
 
-    virtual uint32 Run();
+    virtual uint32 RunProcess();
 
     std::pair<int, int> GetResult() { return Result; }
-    bool IsOver() { return bFinished; }
 };
 

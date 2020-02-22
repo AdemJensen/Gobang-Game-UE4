@@ -73,11 +73,13 @@ public:
 		EChessType GetLastPlayChessType() { return LastPlayChessType; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void OnRoundOver();
+		void DoRoundOver(FIntPoint ActionLocation);
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void OnSurrounder(EChessType SurrounderTarget);
+		void DoSurrounder(EChessType SurrounderTarget);
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void OnUnexpectedAction(EUnexpectedGameActionType Type);
+		void DoUnexpectedAction(EUnexpectedGameActionType Type);
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void DoRetract();
 
 protected:
 
@@ -97,8 +99,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
 		EChessType LastPlayChessType = EChessType::BLACK;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
+		AGamePlayerBase* GamePlayer_Black;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
+		AGamePlayerBase* GamePlayer_White;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	FTimerHandle GameThreadTimerHandle;
+	FTimerDelegate GameThreadTimerDelegate;
 
 public:	
 	// Called every frame

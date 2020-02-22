@@ -3,9 +3,8 @@
 #include "KizunaAiThreadWorker.h"
 
 
-uint32 FKizunaAiThreadWorker::Run()
+uint32 FKizunaAiThreadWorker::RunProcess()
 {
-	Result = Ai->makeAction();
-	bFinished = true;
+	if (board != nullptr) Result = ai->makeAction(*board);
 	return 0;
 }

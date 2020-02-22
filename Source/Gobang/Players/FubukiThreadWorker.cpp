@@ -3,9 +3,8 @@
 #include "FubukiThreadWorker.h"
 
 
-uint32 FFubukiThreadWorker::Run()
+uint32 FFubukiThreadWorker::RunProcess()
 {
 	Result = Ai->makeAction();
-	bFinished = true;
 	return 0;
 }

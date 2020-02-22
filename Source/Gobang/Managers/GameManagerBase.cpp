@@ -83,18 +83,23 @@ void AGameManagerBase::HideLastIndicator() {
 	Indicator_Last->SetIndicatorVisibility(false);
 }
 
-void AGameManagerBase::OnRoundOver()
+void AGameManagerBase::DoRoundOver(FIntPoint ActionLocation)
 {
 	ChangeUiAction.Broadcast(nullptr);
 }
 
-void AGameManagerBase::OnSurrounder(EChessType SurrounderTarget)
+void AGameManagerBase::DoSurrounder(EChessType SurrounderTarget)
 {
 }
 
-void AGameManagerBase::OnUnexpectedAction(EUnexpectedGameActionType Type)
+void AGameManagerBase::DoUnexpectedAction(EUnexpectedGameActionType Type)
 {
 }
+
+void AGameManagerBase::DoRetract()
+{
+}
+
 
 // Called when the game starts or when spawned
 void AGameManagerBase::BeginPlay()

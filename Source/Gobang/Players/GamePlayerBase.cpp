@@ -14,31 +14,40 @@ AGamePlayerBase::AGamePlayerBase()
 
 }
 
-void AGamePlayerBase::OnRoundOver()
+void AGamePlayerBase::DoRoundOver(FIntPoint ActionLocation)
 {
 	AGameModeBase* GameMode = GetGameMode();
 	if (GameMode == nullptr) return;
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
 	if (MyGameMode == nullptr) return;
-	MyGameMode->GameManager->OnRoundOver();
+	MyGameMode->GameManager->DoRoundOver(ActionLocation);
 }
 
-void AGamePlayerBase::OnSurrounder()
+void AGamePlayerBase::DoSurrounder()
 {
 	AGameModeBase* GameMode = GetGameMode();
 	if (GameMode == nullptr) return;
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
 	if (MyGameMode == nullptr) return;
-	MyGameMode->GameManager->OnSurrounder(GetChessType());
+	MyGameMode->GameManager->DoSurrounder(GetChessType());
 }
 
-void AGamePlayerBase::OnUnexpectedAction(EUnexpectedGameActionType Type)
+void AGamePlayerBase::DoUnexpectedAction(EUnexpectedGameActionType Type)
 {
 	AGameModeBase* GameMode = GetGameMode();
 	if (GameMode == nullptr) return;
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
 	if (MyGameMode == nullptr) return;
-	MyGameMode->GameManager->OnUnexpectedAction(Type);
+	MyGameMode->GameManager->DoUnexpectedAction(Type);
+}
+
+void AGamePlayerBase::DoRetract()
+{
+	AGameModeBase* GameMode = GetGameMode();
+	if (GameMode == nullptr) return;
+	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
+	if (MyGameMode == nullptr) return;
+	MyGameMode->GameManager->DoSurrounder(GetChessType());
 }
 
 // Called when the game starts or when spawned

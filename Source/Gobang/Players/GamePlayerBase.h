@@ -19,16 +19,19 @@ public:
 	AGamePlayerBase();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		virtual void OnRoundStart() { }
+		virtual void OnGameStart() { }	// Called outside, needs to implement inside.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void OnRoundOver();
+		virtual void OnRoundStart() { }	// Called outside, needs to implement inside.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void OnSurrounder();
+		virtual void OnInterrupt() { }	// Called outside, needs to implement inside.
 
+	/**
+	This function is called when either of the player called "DoRetract."
+	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void OnUnexpectedAction(EUnexpectedGameActionType Type);
+		virtual void OnRetract(FIntPoint RetractPosition) { }	// Called outside, needs to implement inside.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetChessType(EChessType Type) { ChessType = Type; }
@@ -47,6 +50,18 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Game Info")
 		EChessType ChessType = EChessType::UNKNOWN;
+
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void DoRoundOver(FIntPoint ActionLocation);
+
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void DoSurrounder();
+
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void DoUnexpectedAction(EUnexpectedGameActionType Type);
+
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void DoRetract();
 
 public:	
 	// Called every frame
