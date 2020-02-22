@@ -20,6 +20,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void StartDowncount(float TotalTime, float UnitTime = 1.0f);
 
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		void RestartDowncount();
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")
 		void OnRemainChanged(float TimeRemain);
 
@@ -35,6 +38,7 @@ protected:
 
 	float UnitSeconds = 1.0f;
 	float RemainSeconds = 0.0f;
+	float TotalTimeLimit = 0.0f;
 	float AccumulatedTime = 0.0f;
 
 	bool bRunning = false;

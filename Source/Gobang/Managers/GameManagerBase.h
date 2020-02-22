@@ -10,6 +10,7 @@
 #include "../Basics/ProgramStage.h"
 #include "../Players/GamePlayerBase.h"
 #include "SinglePlayPublicManager.h"
+#include "GameThreadTicker.h"
 #include "../Basics/UnexpectedGameActionType.h"
 #include "GameManagerBase.generated.h"
 
@@ -44,14 +45,9 @@ public:
 
 	/*
 	Prepare the parameters for gameplay.
-	Return:
-		- 0: AOK, No problem.
-		- 1: The world object is invalid.
-		- 2: The Board Manager is invalid.
-		- 3: The Public Manager is invalid.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		int OnGameStart();
+		void DoGameStart();
 
 	// Indicators
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
@@ -81,6 +77,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
 		void DoRetract();
 
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		AGameThreadTicker* GetGameThreadObj() { return GameThread; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		AGamePlayerBase* GetGamePlayer(EChessType PlayerType) { return PlayerType == EChessType::BLACK ? GamePlayer_Black : GamePlayer_White; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetGamePlayer(EChessType PlayerType, AGamePlayerBase* GamePlayer);
+
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Game Info")
@@ -107,8 +111,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	FTimerHandle GameThreadTimerHandle;
-	FTimerDelegate GameThreadTimerDelegate;
+	AGameThreadTicker* GameThread;
 
 public:	
 	// Called every frame

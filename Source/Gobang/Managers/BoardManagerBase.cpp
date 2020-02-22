@@ -13,21 +13,6 @@ ABoardManagerBase::ABoardManagerBase()
 
 }
 
-ABoardManagerBase::~ABoardManagerBase()
-{
-	UWorld* TheWorld = GetWorld();
-	for (int i = 0; i < BOARD_SIZE; i++)
-	{
-		for (int j = 0; j < BOARD_SIZE; j++)
-		{
-			if (Triggers[i][j] != nullptr)
-			{
-				Triggers[i][j]->Destroy();
-			}
-		}
-	}
-}
-
 void ABoardManagerBase::InitGameBoard(ABoardLocator* LU, ABoardLocator* RD, bool bBanModeOn)
 {
 	UWorld* TheWorld = GetWorld();
@@ -54,6 +39,20 @@ void ABoardManagerBase::InitGameBoard(ABoardLocator* LU, ABoardLocator* RD, bool
 			{
 				NewTrigger->InitUtility(FVector2D(unitX - 1, unitY - 1), i, j, this);
 				Triggers[i][j] = NewTrigger;
+			}
+		}
+	}
+}
+
+void ABoardManagerBase::RemoveGameBoard()
+{
+	for (int i = 0; i < BOARD_SIZE; i++)
+	{
+		for (int j = 0; j < BOARD_SIZE; j++)
+		{
+			if (Triggers[i][j] != nullptr)
+			{
+				Triggers[i][j]->Destroy();
 			}
 		}
 	}

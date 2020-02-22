@@ -5,6 +5,8 @@
 #include "GobangGameModeBase.h"
 #include "Basics/BoardTrigger.h"
 #include "Basics/ProgramStage.h"
+#include "Basics/BanMode.h"
+#include "Players/GamePlayerType.h"
 
 // Sets default values
 AGobangPlayerPawn::AGobangPlayerPawn()
@@ -47,10 +49,18 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 		if (BoardIndicator != nullptr)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
-			MyGameMode->GameManager->SetPlayerIndicator(
-				BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
-				MyGameMode->GameManager->BoardManager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->GameManager->PublicManager->GetSelfChess()) == 0
-			);
+			if (MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
+			{
+				MyGameMode->GameManager->SetPlayerIndicator(
+					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
+					MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILEGAL_BANNED || 
+						MyGameMode->GameManager->BoardManager->IsAvailable(
+							BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
+							MyGameMode->GameManager->PublicManager->GetCurrentPlayer()
+						) == 0
+				);
+
+			}
 		}
 		else
 		{

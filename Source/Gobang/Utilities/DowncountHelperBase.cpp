@@ -18,7 +18,15 @@ ADowncountHelperBase::ADowncountHelperBase()
 void ADowncountHelperBase::StartDowncount(float TotalTime, float UnitTime)
 {
 	UnitSeconds = UnitTime;
+	TotalTimeLimit = TotalTime;
 	RemainSeconds = TotalTime;
+	AccumulatedTime = 0.0f;
+	bRunning = true;
+}
+
+void ADowncountHelperBase::RestartDowncount()
+{
+	RemainSeconds = TotalTimeLimit;
 	AccumulatedTime = 0.0f;
 	bRunning = true;
 }

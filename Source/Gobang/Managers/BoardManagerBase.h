@@ -25,7 +25,9 @@ public:
 
 	// Sets default values for this actor's properties
 	ABoardManagerBase();
-	~ABoardManagerBase();
+	
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void RemoveGameBoard();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")	
 		void InitGameBoard(ABoardLocator* LU, ABoardLocator* RD, bool bBanModeOn);

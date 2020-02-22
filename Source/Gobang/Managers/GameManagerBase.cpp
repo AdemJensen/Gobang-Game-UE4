@@ -22,32 +22,30 @@ AGameManagerBase::AGameManagerBase()
 
 /*
 Prepare the parameters for gameplay.
-Return:
-	0: AOK, No problem.
-	1: The world object is invalid.
-	2: The Board Manager is invalid.
-	3: The Public Manager is invalid.
 */
-int AGameManagerBase::OnGameStart()
+void AGameManagerBase::DoGameStart()
 {
 	UWorld* TheWorld = GetWorld();
-	if (TheWorld == nullptr) return 1;
+	if (TheWorld == nullptr) return;
 	
-	AActor* Temp = UGameplayStatics::GetActorOfClass(TheWorld, ABoardManagerBase::StaticClass());
+	/*AActor* Temp = UGameplayStatics::GetActorOfClass(TheWorld, ABoardManagerBase::StaticClass());
 	if (Temp == nullptr) return 2;
 	BoardManager = Cast<ABoardManagerBase>(Temp);
-	if (BoardManager == nullptr) return 2;
+	if (BoardManager == nullptr) return 2;*/
 
-	Temp = UGameplayStatics::GetActorOfClass(TheWorld, APublicManagerBase::StaticClass());
+	/*Temp = UGameplayStatics::GetActorOfClass(TheWorld, APublicManagerBase::StaticClass());
 	if (Temp == nullptr) return 3;
 	PublicManager = Cast<APublicManagerBase>(Temp);
-	if (PublicManager == nullptr) return 3;
+	if (PublicManager == nullptr) return 3;*/
 
 	TArray<AActor*> TempArr;
 	UGameplayStatics::GetAllActorsOfClass(TheWorld, AChess::StaticClass(), TempArr);
 	for (int i = 0; i < TempArr.Num(); i++) TempArr[i]->Destroy();
 
-	return 0;
+	// Start Master Engine
+	GameThread = TheWorld->SpawnActor<AGameThreadTicker>(FVector(0, 0, 0), FRotator(0, 0, 0));
+	GameThread->SetTimeLimit(PublicManager->GetRoundTimeLimit());
+	GameThread->StartGameThread();
 }
 
 void AGameManagerBase::SetPlayerIndicator(int32 X, int32 Y, bool IsOk)
@@ -100,6 +98,17 @@ void AGameManagerBase::DoRetract()
 {
 }
 
+void AGameManagerBase::SetGamePlayer(EChessType PlayerType, AGamePlayerBase* GamePlayer)
+{
+	if (PlayerType == EChessType::BLACK)
+	{
+		GamePlayer_Black = GamePlayer;
+	}
+	else
+	{
+		GamePlayer_White = GamePlayer;
+	}
+}
 
 // Called when the game starts or when spawned
 void AGameManagerBase::BeginPlay()

@@ -24,6 +24,11 @@ public:
 		EGameStage GetGameStage() { return Stage; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetCurrentPlayer(EChessType ChessType) { CurrentPlayer = ChessType; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		EChessType GetCurrentPlayer() { return CurrentPlayer; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetSelfChess(EChessType ChessType) { SelfChess = ChessType; }
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		EChessType GetSelfChess() { return SelfChess; }
@@ -57,6 +62,8 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Game Status")
 		EGameStage Stage = EGameStage::UNKNOWN;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
+		EChessType CurrentPlayer = EChessType::BLACK;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		EChessType SelfChess = EChessType::UNKNOWN;
 
