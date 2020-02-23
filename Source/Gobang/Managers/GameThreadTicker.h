@@ -6,7 +6,8 @@
 #include "../Utilities/DowncountHelperBase.h"
 #include "GameThreadTicker.generated.h"
 
-
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundOverAction, AGamePlayerBase*, TargetPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshUiAction, AGamePlayerBase*, TargetPlayer, float, TimeRemain);
 /**
  * 
  */
@@ -17,6 +18,15 @@ class GOBANG_API AGameThreadTicker : public ADowncountHelperBase
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+		FRoundOverAction RoundOverAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+		FRoundOverAction TimeUpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+		FRefreshUiAction RefreshUiAction;
+
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void StartGameThread() { StartDowncount(TimeLimit, 0.1); }
 
@@ -25,8 +35,12 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		float GetTimeLimit() { return TimeLimit; }
 
+	void OnRoundOver(); // Called inside for Thread.
+
 	void OnRemainChanged(float TimeRemain);
 	void OnTimeUp();
+
+	
 
 protected:
 

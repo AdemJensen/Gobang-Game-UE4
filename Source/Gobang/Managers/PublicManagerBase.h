@@ -7,6 +7,7 @@
 #include "../Basics/GameStage.h"
 #include "../Basics/ChessType.h"
 #include "../Basics/BanMode.h"
+#include "../Basics/UnexpectedGameActionType.h"
 #include "PublicManagerBase.generated.h"
 
 UCLASS()
@@ -55,12 +56,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		float GetHintCoolDownTime() { return HintCoolDownTime; }
 
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetUnexpectedActionType(EUnexpectedGameActionType Type) { UnexpectedActionType = Type; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		EUnexpectedGameActionType GetUnexpectedActionType() { return UnexpectedActionType; }
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UPROPERTY(EditAnywhere, Category = "Game Status")
 		EGameStage Stage = EGameStage::UNKNOWN;
+	UPROPERTY(EditAnywhere, Category = "Game Status")
+		EUnexpectedGameActionType UnexpectedActionType = EUnexpectedGameActionType::UNKNOWN;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		EChessType CurrentPlayer = EChessType::BLACK;

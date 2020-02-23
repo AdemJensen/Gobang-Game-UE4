@@ -11,10 +11,10 @@
 #include "../Players/GamePlayerBase.h"
 #include "SinglePlayPublicManager.h"
 #include "GameThreadTicker.h"
+#include "IndicationManager.h"
 #include "../Basics/UnexpectedGameActionType.h"
 #include "GameManagerBase.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FChangeUiAction, AGamePlayerBase*, TargetPlayer);
 UCLASS()
 class GOBANG_API AGameManagerBase : public AActor
 {
@@ -25,13 +25,17 @@ public:
 	// Sets default values for this actor's properties
 	AGameManagerBase();
 
-	FChangeUiAction ChangeUiAction;
-
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		ABoardManagerBase* BoardManager;	// Only valid when at game.
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		APublicManagerBase* PublicManager;	// Only valid when at game.
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
+		AIndicationManager* IndicationManager;	// Valid all the time.
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
+		AGameThreadTicker* GameThread;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		ASinglePlayPublicManager* LastSinglePlayPublicManager;	// Valid in the first place.
@@ -48,20 +52,6 @@ public:
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
 		void DoGameStart();
-
-	// Indicators
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void SetPlayerIndicator(int32 X, int32 Y, bool IsOk);
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void SetHintIndicator(int32 X, int32 Y);
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void SetLastIndicator(int32 X, int32 Y);
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void HideHintIndicator();
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void HidePlayerIndicator();
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void HideLastIndicator();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetLastPlayChessType(EChessType LastType) { LastPlayChessType = LastType; }
@@ -84,21 +74,12 @@ public:
 		AGamePlayerBase* GetGamePlayer(EChessType PlayerType) { return PlayerType == EChessType::BLACK ? GamePlayer_Black : GamePlayer_White; }
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetGamePlayer(EChessType PlayerType, AGamePlayerBase* GamePlayer);
+	
 
 protected:
 
 	UPROPERTY(EditAnywhere, Category = "Game Info")
 		EProgramStage Stage = EProgramStage::UNKNOWN;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
-		ABoardIndicator* Indicator_Player;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
-		ABoardIndicator* Indicator_Last;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
-		ABoardIndicator* Indicator_Hint;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
-		USoundWave* PlaceChessAudio;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
 		EChessType LastPlayChessType = EChessType::BLACK;
@@ -110,8 +91,6 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
-
-	AGameThreadTicker* GameThread;
 
 public:	
 	// Called every frame

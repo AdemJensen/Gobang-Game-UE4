@@ -51,7 +51,7 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
 			if (MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
 			{
-				MyGameMode->GameManager->SetPlayerIndicator(
+				MyGameMode->GameManager->IndicationManager->SetPlayerIndicator(
 					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
 					MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILEGAL_BANNED || 
 						MyGameMode->GameManager->BoardManager->IsAvailable(
@@ -64,7 +64,7 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 		}
 		else
 		{
-			MyGameMode->GameManager->HidePlayerIndicator();
+			MyGameMode->GameManager->IndicationManager->HidePlayerIndicator();
 		}
 	}
 }

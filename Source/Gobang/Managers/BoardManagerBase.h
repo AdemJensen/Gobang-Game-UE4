@@ -21,7 +21,7 @@ class GOBANG_API ABoardManagerBase : public AActor
 	
 public:	
 
-	#define BOARD_SIZE 19
+	const static int BOARD_SIZE = 19;
 
 	// Sets default values for this actor's properties
 	ABoardManagerBase();
