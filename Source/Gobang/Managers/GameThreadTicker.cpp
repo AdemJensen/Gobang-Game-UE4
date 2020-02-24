@@ -6,11 +6,31 @@
 #include "Kismet/GameplayStatics.h"
 #include "../GobangGameModeBase.h"
 #include "../Basics/ChessType.h"
+#include "../Basics/GameStage.h"
+#include "GameManagerBase.h"
 
 void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 {
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
-	RefreshUiAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer()), TimeRemain);
+	switch (MyGameMode->GameManager->PublicManager->GetGameStage())
+	{
+	case EGameStage::WAIT_FOR_ACTION:
+		RefreshUiAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer()), TimeRemain);
+		break;
+	case EGameStage::ROUND_OVER:
+		// Logics to judge win or lose
+		OnRoundOver();
+		break;
+	case EGameStage::SURROUNDERED:
+
+		break;
+	case EGameStage::RETRACTED:
+
+		break;
+	//default:
+		// Error.
+	}
+	
 }
 
 void AGameThreadTicker::OnTimeUp()

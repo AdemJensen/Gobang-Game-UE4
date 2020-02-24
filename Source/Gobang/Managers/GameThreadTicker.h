@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "../Utilities/DowncountHelperBase.h"
+#include "../Basics/EndGameReason.h"
 #include "GameThreadTicker.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundOverAction, AGamePlayerBase*, TargetPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameEndAction, EEndGameReason, EndGameReason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshUiAction, AGamePlayerBase*, TargetPlayer, float, TimeRemain);
 /**
  * 
@@ -23,6 +25,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
 		FRoundOverAction TimeUpAction;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+		FGameEndAction GameEndAction;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
 		FRefreshUiAction RefreshUiAction;
