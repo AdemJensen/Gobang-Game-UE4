@@ -54,8 +54,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		int32 GetWinner();
 
-	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		bool RetractChess();
+	//UFUNCTION(BlueprintCallable, Category = "Game Actions")
+	std::pair<FIntPoint, FIntPoint> RetractChess();		// This function is not intended to be called in blueprint.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		int32 GetChessNum() { return Chesses.Num(); }

@@ -19,11 +19,13 @@ class GOBANG_API AAiGamePlayer : public AGamePlayerBase
 	GENERATED_BODY()
 	
 public:
+
+	virtual EGamePlayerType GetPlayerType() { return EGamePlayerType::LOCAL_AI; }
 	
 	virtual void OnGameStart();
 	virtual void OnRoundStart();
 	virtual void OnInterrupt();
-	virtual void OnRetract(FIntPoint RetractPosition);
+	virtual void OnRetract(FIntPoint RetractPosition1, FIntPoint RetractPosition2);
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetAiLevel(int32 Level) { AiLevel = Level; }

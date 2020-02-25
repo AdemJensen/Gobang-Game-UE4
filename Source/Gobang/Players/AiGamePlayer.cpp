@@ -45,11 +45,12 @@ void AAiGamePlayer::OnInterrupt()
 	}
 }
 
-void AAiGamePlayer::OnRetract(FIntPoint RetractPosition)
+void AAiGamePlayer::OnRetract(FIntPoint RetractPosition1, FIntPoint RetractPosition2)
 {
 	if (GetAiLevel() == 3)
 	{
-		MissFu.takeChess(RetractPosition.X, RetractPosition.Y);
+		MissFu.takeChess(RetractPosition1.X, RetractPosition1.Y);
+		MissFu.takeChess(RetractPosition2.X, RetractPosition2.Y);
 	}
 }
 

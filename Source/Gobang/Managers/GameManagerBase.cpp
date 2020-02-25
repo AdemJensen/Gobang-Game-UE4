@@ -47,6 +47,7 @@ void AGameManagerBase::DoRoundOver(FIntPoint ActionLocation)
 {
 	if (PublicManager->GetGameStage() == EGameStage::WAIT_FOR_ACTION)
 	{
+		GameThread->SetActionPoint(ActionLocation);
 		PublicManager->SetGameStage(EGameStage::ROUND_OVER);
 	}
 }

@@ -52,6 +52,12 @@ void ADowncountHelperBase::Tick(float DeltaTime)
 	
 	if (bRunning)
 	{
+		if (RemainSeconds < UnitSeconds)
+		{
+			bRunning = false;
+			OnTimeUp();
+			return;
+		}
 		AccumulatedTime += DeltaTime;
 		if (AccumulatedTime > UnitSeconds)
 		{

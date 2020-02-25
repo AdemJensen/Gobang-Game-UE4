@@ -13,5 +13,9 @@ UCLASS()
 class GOBANG_API ALocalGamePlayer : public AGamePlayerBase
 {
 	GENERATED_BODY()
+
+public:
+
+	virtual EGamePlayerType GetPlayerType() { return EGamePlayerType::LOCAL_PLAYER; }
 	
 };

@@ -31,12 +31,17 @@ public:
 	This function is called when either of the player called "DoRetract."
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		virtual void OnRetract(FIntPoint RetractPosition) { }	// Called outside, needs to implement inside.
+		virtual void OnRetract(FIntPoint RetractPosition1, FIntPoint RetractPosition2) { }	// Called outside, needs to implement inside.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetChessType(EChessType Type) { ChessType = Type; }
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		EChessType GetChessType() { return ChessType; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetRetractRemainTimes(int32 RemainTimes) { RetractRemainTimes = RemainTimes; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		int32 GetRetractRemainTimes() { return RetractRemainTimes; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		virtual EGamePlayerType GetPlayerType() { return EGamePlayerType::UNKNOWN; }
@@ -50,6 +55,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "Game Info")
 		EChessType ChessType = EChessType::UNKNOWN;
+
+	UPROPERTY(EditAnywhere, Category = "Game Info")
+		int32 RetractRemainTimes = 0;
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
 		void DoRoundOver(FIntPoint ActionLocation);

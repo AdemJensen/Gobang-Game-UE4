@@ -2,6 +2,9 @@
 
 
 #include "BoardTrigger.h"
+#include "../GobangGameModeBase.h"
+#include "BanMode.h"
+#include "../Players/GamePlayerType.h"
 #include "Engine.h"
 
 // Sets default values
@@ -41,6 +44,21 @@ void ABoardTrigger::InitUtility(FVector2D size, int32 Coord_X, int32 Coord_Y, AB
 void ABoardTrigger::TriggerClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Board clicked at (%d, %d)"), Coordinate_X, Coordinate_Y));
+	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	EChessType CurrentType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer();
+	if (MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
+	{
+		if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILEGAL_BANNED 
+			&& !MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType))
+		{
+			MyGameMode->GameManager->IndicationManager->PlayChessSound(false, MyGameMode->GameManager->IndicationManager->GetAbsolutePosition(Coordinate_X, Coordinate_Y));
+		}
+		else
+		{
+			MyGameMode->GameManager->IndicationManager->PlayChessSound(true, MyGameMode->GameManager->IndicationManager->GetAbsolutePosition(Coordinate_X, Coordinate_Y));
+			MyGameMode->GameManager->DoRoundOver(FIntPoint(Coordinate_X, Coordinate_Y));
+		}
+	}
 	//if (OwnerBoard->GetCurrentStatus() == 2)
 	//{
 	//	if (OwnerBoard->PlaceChess(Coordinate_X, Coordinate_Y, OwnerBoard->GetSelfPlayer() == 1))

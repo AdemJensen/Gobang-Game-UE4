@@ -76,16 +76,19 @@ int32 ABoardManagerBase::GetWinner() {
 	return board.getWinner(); 
 }
 
-bool ABoardManagerBase::RetractChess()
+std::pair<FIntPoint, FIntPoint> ABoardManagerBase::RetractChess()
 {
-	if (Chesses.Num() < 2) return false;
+	if (Chesses.Num() < 2) return std::make_pair(FIntPoint(-1, -1), FIntPoint(-1, -1));
+	FIntPoint Point1, Point2;
+	Point1 = FIntPoint(board.getLastChess().first, board.getLastChess().second);
 	board.retract();
+	Point2 = FIntPoint(board.getLastChess().first, board.getLastChess().second);
 	board.retract();
 	Chesses[Chesses.Num() - 1]->Destroy();
 	Chesses[Chesses.Num() - 2]->Destroy();
 	Chesses.RemoveAt(Chesses.Num() - 1);
 	Chesses.RemoveAt(Chesses.Num() - 1);
-	return true;
+	return std::make_pair(Point1, Point2);
 }
 
 FIntPoint ABoardManagerBase::GetWinPosition()

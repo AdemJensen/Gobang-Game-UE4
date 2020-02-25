@@ -7,7 +7,8 @@
 #include "../Basics/EndGameReason.h"
 #include "GameThreadTicker.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundOverAction, AGamePlayerBase*, TargetPlayer);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRoundOverAction, AGamePlayerBase*, TargetPlayer);	// Target is next player.
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRetractAction, AGamePlayerBase*, TargetPlayer);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FGameEndAction, EEndGameReason, EndGameReason);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRefreshUiAction, AGamePlayerBase*, TargetPlayer, float, TimeRemain);
 /**
@@ -20,16 +21,16 @@ class GOBANG_API AGameThreadTicker : public ADowncountHelperBase
 
 public:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
 		FRoundOverAction RoundOverAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
-		FRoundOverAction TimeUpAction;
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+		FRetractAction RetractAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
 		FGameEndAction GameEndAction;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
 		FRefreshUiAction RefreshUiAction;
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
@@ -40,15 +41,22 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		float GetTimeLimit() { return TimeLimit; }
 
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetActionPoint(FIntPoint Point) { ActionPoint = Point; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		FIntPoint GetActionPoint() { return ActionPoint; }
+
 	void OnRoundOver(); // Called inside for Thread.
 
 	void OnRemainChanged(float TimeRemain);
 	void OnTimeUp();
 
-	
+	void Interrupt();
 
 protected:
 
 	float TimeLimit = 30.0f;
+
+	FIntPoint ActionPoint;
 	
 };
