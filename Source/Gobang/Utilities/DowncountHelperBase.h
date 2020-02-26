@@ -23,11 +23,14 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void RestartDowncount();
 
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")
-		void OnRemainChanged(float TimeRemain);
-
-	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Actions")
-		void OnTimeUp();
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Actions")
+		void BP_OnRemainChanged(float TimeRemain);
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Actions")
+		void BP_OnTimeUp();
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		virtual void OnRemainChanged(float TimeRemain) { /*GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Master Thread is running."));*/ }
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		virtual void OnTimeUp() { /*GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Master Thread is running."));*/ }
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void Interrupt() { bRunning = false; }
@@ -36,15 +39,19 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	float UnitSeconds = 1.0f;
-	float RemainSeconds = 0.0f;
-	float TotalTimeLimit = 0.0f;
-	float AccumulatedTime = 0.0f;
+	UPROPERTY(VisibleAnywhere, Category = "Info")
+		float UnitSeconds = 1.0f;
+	UPROPERTY(VisibleAnywhere, Category = "Info")
+		float RemainSeconds = 0.0f;
+	UPROPERTY(VisibleAnywhere, Category = "Info")
+		float TotalTimeLimit = 0.0f;
+	UPROPERTY(VisibleAnywhere, Category = "Info")
+		float AccumulatedTime = 0.0f;
 
-	bool bRunning = false;
-
-	FTimerHandle TimerHandle;
-	FTimerDelegate TimerDelegate;
+	UPROPERTY(VisibleAnywhere, Category = "Info")
+		bool bRunning = false;
+	UPROPERTY(VisibleAnywhere, Category = "Info")
+		bool bForever = false;
 
 public:	
 	// Called every frame

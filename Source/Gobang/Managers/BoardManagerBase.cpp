@@ -58,18 +58,19 @@ void ABoardManagerBase::RemoveGameBoard()
 	}
 }
 
-int ABoardManagerBase::PlaceChess(int32 X, int32 Y, bool IsBlack)
+int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 {
-	if (!board.isAvailable(X, Y, (IsBlack ? 1 : 2))) return false;
-	board.placeChess((IsBlack ? 1 : 2), X, Y);
+	int Avail = board.isAvailable(X, Y, (ChessType == EChessType::BLACK ? 1 : 2));
+	if (Avail == 1) return 1;
+	board.placeChess((ChessType == EChessType::BLACK ? 1 : 2), X, Y);
 	AChess* ChessObj = GetWorld()->SpawnActor<AChess>(Location_LU + FVector(unitX * X, unitY * Y, 0), FRotator(0, 0, 0));
 	if (ChessObj != nullptr)
 	{
-		ChessObj->SetChessColor(IsBlack);
+		ChessObj->SetChessColor(ChessType == EChessType::BLACK);
 		ChessObj->SetChessVisibility(true);
 	}
 	Chesses.Add(ChessObj);
-	return true;
+	return Avail;
 }
 
 int32 ABoardManagerBase::GetWinner() {

@@ -13,14 +13,11 @@ AGameManagerBase::AGameManagerBase()
 
 }
 
-/*
-Prepare the parameters for gameplay.
-*/
-void AGameManagerBase::DoGameStart()
+void AGameManagerBase::DoPrepareEnv()
 {
 	UWorld* TheWorld = GetWorld();
 	if (TheWorld == nullptr) return;
-	
+
 	/*AActor* Temp = UGameplayStatics::GetActorOfClass(TheWorld, ABoardManagerBase::StaticClass());
 	if (Temp == nullptr) return 2;
 	BoardManager = Cast<ABoardManagerBase>(Temp);
@@ -35,9 +32,19 @@ void AGameManagerBase::DoGameStart()
 	UGameplayStatics::GetAllActorsOfClass(TheWorld, AChess::StaticClass(), TempArr);
 	for (int i = 0; i < TempArr.Num(); i++) TempArr[i]->Destroy();
 
-	// Start Master Engine
 	GameThread = TheWorld->SpawnActor<AGameThreadTicker>(FVector(0, 0, 0), FRotator(0, 0, 0));
-	GameThread->SetTimeLimit(PublicManager->GetRoundTimeLimit());
+}
+
+/*
+Prepare the parameters for gameplay.
+*/
+void AGameManagerBase::DoGameStart()
+{
+	UWorld* TheWorld = GetWorld();
+	if (TheWorld == nullptr) return;
+
+	// Start Master Engine
+	GameThread->SetTimeLimit(PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit());
 	GameThread->StartGameThread();
 }
 

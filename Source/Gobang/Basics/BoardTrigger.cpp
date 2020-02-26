@@ -49,7 +49,7 @@ void ABoardTrigger::TriggerClicked(UPrimitiveComponent* ClickedComp, FKey Button
 	if (MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
 	{
 		if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILEGAL_BANNED 
-			&& !MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType))
+			&& MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) != 0)
 		{
 			MyGameMode->GameManager->IndicationManager->PlayChessSound(false, MyGameMode->GameManager->IndicationManager->GetAbsolutePosition(Coordinate_X, Coordinate_Y));
 		}

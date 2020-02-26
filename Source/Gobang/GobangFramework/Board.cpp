@@ -298,5 +298,5 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 		if (forster_four_num >= 2) return 2;
 		return 0;
 	}
-	return 1;
+	return 0;
 }

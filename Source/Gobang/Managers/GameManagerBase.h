@@ -51,6 +51,12 @@ public:
 	Prepare the parameters for gameplay.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
+		void DoPrepareEnv();
+
+	/*
+	Start master engine.
+	*/
+	UFUNCTION(BlueprintCallable, Category = "Game Actions")
 		void DoGameStart();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")

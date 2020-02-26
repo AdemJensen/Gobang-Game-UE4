@@ -2,6 +2,7 @@
 
 
 #include "DowncountHelperBase.h"
+#include "Engine.h"
 
 // Sets default values for this component's properties
 ADowncountHelperBase::ADowncountHelperBase()
@@ -22,6 +23,7 @@ void ADowncountHelperBase::StartDowncount(float TotalTime, float UnitTime)
 	RemainSeconds = TotalTime;
 	AccumulatedTime = 0.0f;
 	bRunning = true;
+	bForever = TotalTime < 0;
 }
 
 void ADowncountHelperBase::RestartDowncount()
@@ -30,10 +32,6 @@ void ADowncountHelperBase::RestartDowncount()
 	AccumulatedTime = 0.0f;
 	bRunning = true;
 }
-
-void ADowncountHelperBase::OnRemainChanged_Implementation(float TimeRemain) { }
-
-void ADowncountHelperBase::OnTimeUp_Implementation() { }
 
 // Called when the game starts
 void ADowncountHelperBase::BeginPlay()
@@ -49,28 +47,42 @@ void ADowncountHelperBase::BeginPlay()
 void ADowncountHelperBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
 	if (bRunning)
 	{
-		if (RemainSeconds < UnitSeconds)
-		{
-			bRunning = false;
-			OnTimeUp();
-			return;
-		}
 		AccumulatedTime += DeltaTime;
-		if (AccumulatedTime > UnitSeconds)
+		if (bForever)
 		{
-			RemainSeconds -= ((int32) (AccumulatedTime / UnitSeconds)) * UnitSeconds;
-			AccumulatedTime = FMath::Fmod(AccumulatedTime, UnitSeconds);
+			if (AccumulatedTime > UnitSeconds)
+			{
+				AccumulatedTime = FMath::Fmod(AccumulatedTime, UnitSeconds);
+				this->OnRemainChanged(TotalTimeLimit);
+				this->BP_OnRemainChanged(TotalTimeLimit);
+			}
+		}
+		else
+		{
 			if (RemainSeconds < UnitSeconds)
 			{
 				bRunning = false;
-				OnTimeUp();
+				this->OnTimeUp();
+				this->BP_OnTimeUp();
+				return;
 			}
-			else
+			if (AccumulatedTime > UnitSeconds)
 			{
-				OnRemainChanged(RemainSeconds);
+				RemainSeconds -= ((int32)(AccumulatedTime / UnitSeconds)) * UnitSeconds;
+				AccumulatedTime = FMath::Fmod(AccumulatedTime, UnitSeconds);
+				if (RemainSeconds < UnitSeconds)
+				{
+					bRunning = false;
+					this->OnTimeUp();
+					this->BP_OnTimeUp();
+				}
+				else
+				{
+					this->OnRemainChanged(RemainSeconds);
+					this->BP_OnRemainChanged(RemainSeconds);
+				}
 			}
 		}
 	}

@@ -35,11 +35,11 @@ public:
 	/*
 	Place a chess on the world board.
 		0: Success.
-		1: Failed (Board Taken).
-		2: Banned position.
+		1: Location taken.
+		2: Ilegal.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		int PlaceChess(int32 X, int32 Y, bool IsBlack);
+		int PlaceChess(int32 X, int32 Y, EChessType ChessType);
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		bool IsOver() { return board.isOver(); }

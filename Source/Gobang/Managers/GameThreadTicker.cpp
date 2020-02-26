@@ -8,16 +8,20 @@
 #include "../Basics/ChessType.h"
 #include "../Basics/GameStage.h"
 #include "GameManagerBase.h"
+#include "Engine.h"
 
 void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 {
+
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	AGamePlayerBase* Player = MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer());
 	std::pair<FIntPoint, FIntPoint> RetractResult;
 	int32 BoardResult;
+	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Master Thread is running."));
 	switch (MyGameMode->GameManager->PublicManager->GetGameStage())
 	{
 	case EGameStage::UNKNOWN:
+		/*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Got Unknown."));
 		RoundOverAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(EChessType::BLACK));
 		MyGameMode->GameManager->PublicManager->SetCurrentPlayer(EChessType::BLACK);
 		MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::WAIT_FOR_ACTION);
@@ -27,8 +31,9 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 		break;
 	case EGameStage::ROUND_OVER:
 		// Logics to judge win or lose
-		if (MyGameMode->GameManager->BoardManager->IsAvailable(ActionPoint.X, ActionPoint.Y, Player->GetChessType()) != 0)	// Ilegal action.
+		if (MyGameMode->GameManager->BoardManager->PlaceChess(ActionPoint.X, ActionPoint.Y, Player->GetChessType()) != 0)	// Ilegal action.
 		{
+			/*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Ilegal action."));
 			GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ILEGAL_ACTION : EEndGameReason::WHITE_ILEGAL_ACTION);
 			this->Interrupt();
 			return;
@@ -37,6 +42,7 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 		switch (BoardResult)
 		{
 		case 0: // None
+			/*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("normal round over."));
 			OnRoundOver();
 			break;
 		case 1: // Black win
@@ -99,6 +105,7 @@ void AGameThreadTicker::OnTimeUp()
 {
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	//TimeUpAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer()));
+	MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::TIME_UP);
 	GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_TIME_UP : EEndGameReason::WHITE_TIME_UP);
 	this->Interrupt();
 }
@@ -114,6 +121,7 @@ void AGameThreadTicker::Interrupt()
 
 void AGameThreadTicker::OnRoundOver()
 {
+	/*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("OnRoundOver() Called."));
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	EChessType NextType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EChessType::WHITE : EChessType::BLACK;
 	RoundOverAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(NextType));
