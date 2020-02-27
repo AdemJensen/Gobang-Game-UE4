@@ -71,6 +71,18 @@ public:
 	int32 WinDir = -1;
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		FIntPoint GetWinPosition();
+
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		FIntPoint GetLastPosition();
+
+	/*
+	 * Find the direction of winning:
+	 * 1: right.
+	 * 2: down.
+	 * 3: right-down.
+	 * 4: left-down.
+	 * -1: No winner.
+	 */
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		int32 GetWinPositionDir();
 

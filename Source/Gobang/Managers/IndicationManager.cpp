@@ -63,6 +63,49 @@ void AIndicationManager::PlayChessSound(bool bSuccess, FVector Location)
 	UGameplayStatics::PlaySoundAtLocation(GetWorld(), bSuccess ? PlaceChessSuccessAudio : PlaceChessFailAudio, Location);
 }
 
+void AIndicationManager::ShowWinIndication(FIntPoint Location, int32 Direction)
+{
+	if (Direction < 1 || Direction > 4) return;
+	UWorld* TheWorld = GetWorld();
+	if (TheWorld == nullptr) return;
+	for (int i = 0; i < 5; i++)
+	{
+		ABoardIndicator* Temp = WinIndicators[i];
+		switch (Direction)
+		{
+		case 1:
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y + i, 1.4));
+			break;
+		case 2:
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y, 1.4));
+			break;
+		case 3:
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y + i, 1.4));
+			break;
+		case 4:
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y - i, 1.4));
+			break;
+		}
+	}
+	WinIndicationHelper->StartBlink(0.5, 0.3, 5, false);
+}
+
+void AIndicationManager::ShowIlegalIndication(FIntPoint Location)
+{
+	IlegalIndicator->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y, 1.4));
+	IlegalIndicationHelper->StartBlink(0.5, 0.3, 5, false);
+}
+
+void AIndicationManager::HideWinIndication()
+{
+	ShowWinIndication_HideDelegate();
+}
+
+void AIndicationManager::HideIlegalIndication()
+{
+	ShowIlegalIndication_HideDelegate();
+}
+
 // Called when the game starts or when spawned
 void AIndicationManager::BeginPlay()
 {
@@ -79,6 +122,50 @@ void AIndicationManager::BeginPlay()
 	Indicator_Player->SetIndicatorVisibility(false);
 	Indicator_Last->SetIndicatorVisibility(false);
 	Indicator_Hint->SetIndicatorVisibility(false);
+
+	WinIndicationHelper = TheWorld->SpawnActor<ABlinkHelper>(FVector(0, 0, 0), FRotator(0, 0, 0));
+	for (int i = 0; i < 5; i++)
+	{
+		ABoardIndicator* Temp = TheWorld->SpawnActor<ABoardIndicator>(FVector(0, 0, 0), FRotator(0, 0, 0));
+		Temp->SetIndicatorColor(2);
+		WinIndicators.Add(Temp);
+	}
+	WinIndicationHelper->ShowSignDelegate.AddUObject(this, &AIndicationManager::ShowWinIndication_ShowDelegate);
+	WinIndicationHelper->HideSignDelegate.AddUObject(this, &AIndicationManager::ShowWinIndication_HideDelegate);
+
+	IlegalIndicationHelper = TheWorld->SpawnActor<ABlinkHelper>(FVector(0, 0, 0), FRotator(0, 0, 0));
+	IlegalIndicator = TheWorld->SpawnActor<ABoardIndicator>(FVector(0, 0, 0), FRotator(0, 0, 0));
+	IlegalIndicator->SetIndicatorColor(2);
+	IlegalIndicationHelper->ShowSignDelegate.AddUObject(this, &AIndicationManager::ShowIlegalIndication_ShowDelegate);
+	IlegalIndicationHelper->HideSignDelegate.AddUObject(this, &AIndicationManager::ShowIlegalIndication_HideDelegate);
+}
+
+void AIndicationManager::ShowWinIndication_ShowDelegate()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		WinIndicators[i]->SetIndicatorVisibility(true);
+	}
+	UGameplayStatics::PlaySound2D(GetWorld(), WinIndicationSound);
+}
+
+void AIndicationManager::ShowWinIndication_HideDelegate()
+{
+	for (int i = 0; i < 5; i++)
+	{
+		WinIndicators[i]->SetIndicatorVisibility(false);
+	}
+}
+
+void AIndicationManager::ShowIlegalIndication_ShowDelegate()
+{
+	IlegalIndicator->SetIndicatorVisibility(true);
+	UGameplayStatics::PlaySound2D(GetWorld(), IlegalIndicationSound);
+}
+
+void AIndicationManager::ShowIlegalIndication_HideDelegate()
+{
+	IlegalIndicator->SetIndicatorVisibility(false);
 }
 
 // Called every frame

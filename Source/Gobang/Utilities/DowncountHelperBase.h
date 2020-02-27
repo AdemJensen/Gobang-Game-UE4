@@ -21,6 +21,9 @@ public:
 		void StartDowncount(float TotalTime, float UnitTime = 1.0f);
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
+		void ContinueDowncount() { bRunning = true; }
+
+	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void RestartDowncount();
 
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Actions")
@@ -28,9 +31,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable, Category = "Actions")
 		void BP_OnTimeUp();
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-		virtual void OnRemainChanged(float TimeRemain) { /*GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Master Thread is running."));*/ }
+		virtual void OnRemainChanged(float TimeRemain) { }
 	UFUNCTION(BlueprintCallable, Category = "Actions")
-		virtual void OnTimeUp() { /*GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Master Thread is running."));*/ }
+		virtual void OnTimeUp() { }
 
 	UFUNCTION(BlueprintCallable, Category = "Actions")
 		void Interrupt() { bRunning = false; }

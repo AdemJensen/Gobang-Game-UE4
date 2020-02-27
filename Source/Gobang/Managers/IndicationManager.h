@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "../Basics/BoardIndicator.h"
 #include "../Basics/BoardLocator.h"
+#include "../Utilities/BlinkHelper.h"
 #include "IndicationManager.generated.h"
 
 UCLASS()
@@ -37,6 +38,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Presentations")
 		void PlayChessSound(bool bSuccess, FVector Location);
 
+	UFUNCTION(BlueprintCallable, Category = "Presentations")
+		void ShowWinIndication(FIntPoint Location, int32 Direction);
+	UFUNCTION(BlueprintCallable, Category = "Presentations")
+		void ShowIlegalIndication(FIntPoint Location);
+	UFUNCTION(BlueprintCallable, Category = "Presentations")
+		void HideWinIndication();
+	UFUNCTION(BlueprintCallable, Category = "Presentations")
+		void HideIlegalIndication();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -57,6 +67,19 @@ protected:
 		USoundWave* PlaceChessSuccessAudio;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
 		USoundWave* PlaceChessFailAudio;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
+		USoundWave* WinIndicationSound;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
+		USoundWave* IlegalIndicationSound;
+
+	TArray<ABoardIndicator*> WinIndicators;
+	ABlinkHelper* WinIndicationHelper;
+	void ShowWinIndication_ShowDelegate();
+	void ShowWinIndication_HideDelegate();
+	ABoardIndicator* IlegalIndicator;
+	ABlinkHelper* IlegalIndicationHelper;
+	void ShowIlegalIndication_ShowDelegate();
+	void ShowIlegalIndication_HideDelegate();
 
 public:	
 	// Called every frame

@@ -60,16 +60,16 @@ protected:
 		int32 RetractRemainTimes = 0;
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void DoRoundOver(FIntPoint ActionLocation);
+		virtual void DoRoundOver(FIntPoint ActionLocation);
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void DoSurrounder();
+		virtual void DoSurrounder();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void DoUnexpectedAction(EUnexpectedGameActionType Type);
+		virtual void DoUnexpectedAction(EUnexpectedGameActionType Type);
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		void DoRetract();
+		virtual void DoRetract();
 
 public:	
 	// Called every frame

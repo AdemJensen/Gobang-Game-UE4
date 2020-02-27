@@ -26,6 +26,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		ASinglePlayPublicManager* InitSinglePlayPublicManager(int32 DifficultyLevel, int32 BanModeLevel, int32 HintCoolDownLevel, int32 RetractTimesLevel, int32 RoundTimeLimitLevel);
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		ASinglePlayPublicManager* InitSinglePlayPublicManagerByValue(int32 DifficultyValue, EBanMode BanModeValue, float HintCoolDownValue, int32 RetractTimesValue, float RoundTimeLimitValue);
 
 protected:
 

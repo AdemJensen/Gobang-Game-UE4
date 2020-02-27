@@ -23,11 +23,6 @@ void AGobangPlayerPawn::BeginPlay()
 	
 }
 
-void AGobangPlayerPawn::TriggerClick()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Mouse click detected."));
-}
-
 void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, bool bDrawDebugHelpers)
 {
 	FHitResult HitResult;
@@ -51,13 +46,13 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
 			if (MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
 			{
+				int Avail = MyGameMode->GameManager->BoardManager->IsAvailable(
+					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y,
+					MyGameMode->GameManager->PublicManager->GetCurrentPlayer()
+				);
 				MyGameMode->GameManager->IndicationManager->SetPlayerIndicator(
 					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
-					MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILEGAL_BANNED || 
-						MyGameMode->GameManager->BoardManager->IsAvailable(
-							BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
-							MyGameMode->GameManager->PublicManager->GetCurrentPlayer()
-						) == 0
+					(MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILEGAL_BANNED || Avail == 0) && Avail != 1
 				);
 
 			}

@@ -47,7 +47,7 @@ void AGamePlayerBase::DoRetract()
 	if (GameMode == nullptr) return;
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
 	if (MyGameMode == nullptr) return;
-	MyGameMode->GameManager->DoSurrounder(GetChessType());
+	MyGameMode->GameManager->DoRetract();
 }
 
 // Called when the game starts or when spawned

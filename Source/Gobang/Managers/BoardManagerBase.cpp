@@ -60,7 +60,7 @@ void ABoardManagerBase::RemoveGameBoard()
 
 int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 {
-	int Avail = board.isAvailable(X, Y, (ChessType == EChessType::BLACK ? 1 : 2));
+	int Avail = IsAvailable(X, Y, ChessType);
 	if (Avail == 1) return 1;
 	board.placeChess((ChessType == EChessType::BLACK ? 1 : 2), X, Y);
 	AChess* ChessObj = GetWorld()->SpawnActor<AChess>(Location_LU + FVector(unitX * X, unitY * Y, 0), FRotator(0, 0, 0));
@@ -102,6 +102,13 @@ FIntPoint ABoardManagerBase::GetWinPosition()
 	}
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("X %d"), WinX));
 	return WinPos;
+}
+
+FIntPoint ABoardManagerBase::GetLastPosition()
+{
+	if (board.isEmpty()) return FIntPoint(-1, -1);
+	std::pair<int, int> Loc = board.getLastChess();
+	return FIntPoint(Loc.first, Loc.second);
 }
 
 int32 ABoardManagerBase::GetWinPositionDir()

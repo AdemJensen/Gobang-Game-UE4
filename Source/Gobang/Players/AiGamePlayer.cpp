@@ -6,32 +6,32 @@
 #include "FubukiThreadWorker.h"
 #include "../GobangGameModeBase.h"
 #include "../Basics/ChessType.h"
+#include "Engine.h"
 
 void AAiGamePlayer::OnGameStart()
 {
+	Worker = nullptr;
 	if (GetAiLevel() == 3)
 	{
 		MissFu.setPlayer(GetChessType() == EChessType::BLACK ? 1 : 2);
+		TSharedPtr<FFubukiThreadWorker> Temp = TSharedPtr<FFubukiThreadWorker>(new FFubukiThreadWorker());
+		Temp->InitParam(&MissFu);
+		Worker = StaticCastSharedPtr<FThreadWorkerBase>(Temp);
 	}
 	else
 	{
 		MissAi.setDifficulty(GetAiLevel());
 		MissAi.setPlayer(GetChessType() == EChessType::BLACK ? 1 : 2);
+		TSharedPtr<FKizunaAiThreadWorker> Temp = TSharedPtr<FKizunaAiThreadWorker>(new FKizunaAiThreadWorker());
+		Temp->InitParam(&MissAi, Cast<AGobangGameModeBase>(GetGameMode())->GameManager->BoardManager->GetBoardObj());
+		Worker = StaticCastSharedPtr<FThreadWorkerBase>(Temp);
 	}
 }
 
 
 void AAiGamePlayer::OnRoundStart()
 {
-	Worker = nullptr;
-	if (GetAiLevel() == 3)
-	{
-		Worker = TSharedPtr<FThreadWorkerBase>(new FFubukiThreadWorker());
-	}
-	else
-	{
-		Worker = TSharedPtr<FThreadWorkerBase>(new FKizunaAiThreadWorker());
-	}
+	//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Ai Got round start info."));
 	Worker->Start();
 	AiTimerDelegate = FTimerDelegate::CreateUObject(this, &AAiGamePlayer::AiTimerTask);
 	GetWorldTimerManager().SetTimer(AiTimerHandle, AiTimerDelegate, 1.0f, true);
@@ -59,21 +59,22 @@ void AAiGamePlayer::AiTimerTask()
 	if (Worker.Get()->IsOver())
 	{
 		std::pair<int, int> Decision;
+		
 		if (GetAiLevel() == 3)
 		{
-			Decision = StaticCastSharedPtr<FFubukiThreadWorker>(Worker).Get()->GetResult();
+			Decision = StaticCastSharedPtr<FFubukiThreadWorker>(Worker)->GetResult();
 		}
 		else
 		{
-			Decision = StaticCastSharedPtr<FKizunaAiThreadWorker>(Worker).Get()->GetResult();
+			Decision = StaticCastSharedPtr<FKizunaAiThreadWorker>(Worker)->GetResult();
 		}
-		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Robot placed at (%d, %d), Color %s"), decision.first, decision.second, GetSelfPlayer() == 2 ? TEXT("Black") : TEXT("White")));
+		//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, FString::Printf(TEXT("Ai Got the work done (%d, %d)."), Decision.first, Decision.second));
 		AGameModeBase* GameMode = GetGameMode();
 		if (GameMode == nullptr) return;
 		AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
 		if (MyGameMode == nullptr) return;
 		Board* board = MyGameMode->GameManager->BoardManager->GetBoardObj();
-		if (!board->isAvailable(Decision.first, Decision.second, GetChessType() == EChessType::BLACK ? 1 : 2)) DoSurrounder();
+		if (board->isAvailable(Decision.first, Decision.second, GetChessType() == EChessType::BLACK ? 1 : 2) != 0) DoSurrounder();
 		else
 		{
 			if (GetAiLevel() == 3) MissFu.putChess(Decision.first, Decision.second, GetChessType() == EChessType::BLACK ? 1 : 2);

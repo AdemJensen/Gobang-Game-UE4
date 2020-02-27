@@ -43,6 +43,9 @@ void AGameManagerBase::DoGameStart()
 	UWorld* TheWorld = GetWorld();
 	if (TheWorld == nullptr) return;
 
+	GamePlayer_Black->SetRetractRemainTimes(PublicManager->GetTotalRetractTimes());
+	GamePlayer_White->SetRetractRemainTimes(PublicManager->GetTotalRetractTimes());
+
 	// Start Master Engine
 	GameThread->SetTimeLimit(PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit());
 	GameThread->StartGameThread();
@@ -54,6 +57,8 @@ void AGameManagerBase::DoRoundOver(FIntPoint ActionLocation)
 {
 	if (PublicManager->GetGameStage() == EGameStage::WAIT_FOR_ACTION)
 	{
+		IndicationManager->PlayChessSound(true, IndicationManager->GetAbsolutePosition(ActionLocation.X, ActionLocation.Y));
+		IndicationManager->SetLastIndicator(ActionLocation.X, ActionLocation.Y);
 		GameThread->SetActionPoint(ActionLocation);
 		PublicManager->SetGameStage(EGameStage::ROUND_OVER);
 	}
@@ -94,6 +99,7 @@ void AGameManagerBase::SetGamePlayer(EChessType PlayerType, AGamePlayerBase* Gam
 	{
 		GamePlayer_White = GamePlayer;
 	}
+	GamePlayer->SetChessType(PlayerType);
 }
 
 // Called when the game starts or when spawned
