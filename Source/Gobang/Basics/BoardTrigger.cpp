@@ -40,9 +40,30 @@ void ABoardTrigger::InitUtility(FVector2D size, int32 Coord_X, int32 Coord_Y, AB
 	Coordinate_Y = Coord_Y;
 	OwnerBoard = WorldOwnerBoard;
 	Existance->OnClicked.AddDynamic(this, &ABoardTrigger::TriggerClicked);
+	Existance->OnInputTouchBegin.AddDynamic(this, &ABoardTrigger::OnFingerPressedTrigger);
 }
 
 void ABoardTrigger::TriggerClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked)
+{
+	HandleClick();
+}
+
+void ABoardTrigger::OnFingerPressedTrigger(ETouchIndex::Type FingerIndex, UPrimitiveComponent* TouchedComponent)
+{
+	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	EChessType CurrentType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer();
+	MyGameMode->GameManager->IndicationManager->HidePlayerIndicator();
+	if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILEGAL_BANNED
+		&& MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) != 0
+		|| MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) == 1)
+	{
+		MyGameMode->GameManager->IndicationManager->SetPlayerIndicator(Coordinate_X, Coordinate_Y, false);
+	}
+	
+	HandleClick();
+}
+
+void ABoardTrigger::HandleClick()
 {
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("Board clicked at (%d, %d)"), Coordinate_X, Coordinate_Y));
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));

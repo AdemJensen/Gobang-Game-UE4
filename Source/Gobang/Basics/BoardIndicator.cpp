@@ -20,7 +20,7 @@ ABoardIndicator::ABoardIndicator()
 		Mesh->SetStaticMesh(MeshAsset.Object);
 		Mesh->SetSimulatePhysics(false);
 		Mesh->SetGenerateOverlapEvents(false);
-		Mesh->SetWorldScale3D(FVector(0.25, 0.25, 0.25));
+		Mesh->SetWorldScale3D(FVector(0.3, 0.3, 0.3));
 	}
 
 	PlayerMaterial = CreateDefaultSubobject<UMaterial>("PlayerMaterial");

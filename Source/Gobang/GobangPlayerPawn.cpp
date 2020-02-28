@@ -23,6 +23,7 @@ void AGobangPlayerPawn::BeginPlay()
 	
 }
 
+#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
 void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, bool bDrawDebugHelpers)
 {
 	FHitResult HitResult;
@@ -63,6 +64,9 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 		}
 	}
 }
+#else
+void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, bool bDrawDebugHelpers) { }
+#endif
 
 // Called every frame
 void AGobangPlayerPawn::Tick(float DeltaTime)

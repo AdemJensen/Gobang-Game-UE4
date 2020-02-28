@@ -22,9 +22,9 @@ int Fubuki::evalBoard()
 int Fubuki::evalMinMaxPrior(const int x, const int y, const Chessid id) const
 {
 	int min_max_prior = 0;
-	__int32 idl2y = id << 2*y;
-	__int32 idl2x = id << 2*x;
-	__int32 now_col_chess = col_chess[x] | idl2y,
+	int idl2y = id << 2*y;
+	int idl2x = id << 2*x;
+	int now_col_chess = col_chess[x] | idl2y,
 			now_row_chess = row_chess[y] | idl2x,
 			now_left_chess = 0, now_right_chess = 0;
 
@@ -73,10 +73,10 @@ int Fubuki::evalMinMaxPrior(const int x, const int y, const Chessid id) const
 int Fubuki::evalKillPrior(const int x, const int y, const Chessid id) const
 {
 	int kill_prior = 0;
-	__int32 idl2y = id << 2*y;
-	__int32 idl2x = id << 2*x;
+	int idl2y = id << 2*y;
+	int idl2x = id << 2*x;
 
-	__int32 now_col_chess = col_chess[x] | idl2y,
+	int now_col_chess = col_chess[x] | idl2y,
 			now_row_chess = row_chess[y] | idl2x,
 			now_left_chess = 0, now_right_chess = 0;
 

@@ -28,16 +28,16 @@ class Fubuki
 		 *  左斜（左上右下）：最左下的是第0左斜列，靠左上的是低位，扫描次数与位置有关
 		 *  右斜（左下右上）：最左上的是第0右斜列，靠右上的是低位，扫描次数与位置有关
 		 */
-		__int32 col_chess[GRID_N];
-		__int32 row_chess[GRID_N];
-		__int32 left_chess[GRID_DN];
-		__int32 right_chess[GRID_DN];
+		int col_chess[GRID_N];
+		int row_chess[GRID_N];
+		int left_chess[GRID_DN];
+		int right_chess[GRID_DN];
 
-		// 记录每条直线上的棋型，每 1 个 __int32 表示一条直线上的棋型（初始化置0）
-		__int32 col_type[GRID_N];
-		__int32 row_type[GRID_N];
-		__int32 left_type[GRID_DN];
-		__int32 right_type[GRID_DN];
+		// 记录每条直线上的棋型，每 1 个 int 表示一条直线上的棋型（初始化置0）
+		int col_type[GRID_N];
+		int row_type[GRID_N];
+		int left_type[GRID_DN];
+		int right_type[GRID_DN];
 
 		// 记录整个棋盘的棋型，每 1 个 int 表示一种棋型的个数（初始化置0）
 		int all_type[CHESS_TYPE_N];

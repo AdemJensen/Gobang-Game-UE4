@@ -272,7 +272,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_HU_P4)  // 在第c列发现了冲四
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_HU_P4)  // 第i次扫描发现了冲四
 					{
@@ -287,7 +287,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_HU_P4)  // 在第r行找到了冲四
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_HU_P4)  // 第i次扫描发现了冲四
 					{
@@ -302,7 +302,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_HU_P4)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_HU_P4)
 					{
@@ -326,7 +326,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_HU_P4)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_HU_P4)
 					{
@@ -353,7 +353,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_AI_P4)  // 在第c列发现了冲四
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_AI_P4)  // 第i次扫描发现了冲四
 					{
@@ -368,7 +368,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_AI_P4)  // 在第r行找到了冲四
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_AI_P4)  // 第i次扫描发现了冲四
 					{
@@ -383,7 +383,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_AI_P4)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_AI_P4)
 					{
@@ -407,7 +407,7 @@ int Fubuki::findEnemyP4(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_AI_P4)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_AI_P4)
 					{
@@ -446,7 +446,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_HU_A3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_HU_A3)  // 第i次扫描发现了活三
 					{
@@ -468,7 +468,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_HU_A3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_HU_A3)  // 第i次扫描发现了活三
 					{
@@ -490,7 +490,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_HU_A3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_HU_A3)
 					{
@@ -525,7 +525,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_HU_A3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_HU_A3)
 					{
@@ -562,7 +562,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_AI_S3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_AI_S3)  // 第i次扫描发现了活三
 					{
@@ -582,7 +582,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_AI_S3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_AI_S3)  // 第i次扫描发现了活三
 					{
@@ -602,7 +602,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_AI_S3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_AI_S3)
 					{
@@ -633,7 +633,7 @@ int Fubuki::findS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_AI_S3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_AI_S3)
 					{
@@ -694,7 +694,7 @@ exit_hua3_ais3:
 		{
 			if (col_type[c] & F_AI_A3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_AI_A3)  // 第i次扫描发现了活三
 					{
@@ -716,7 +716,7 @@ exit_hua3_ais3:
 		{
 			if (row_type[r] & F_AI_A3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_AI_A3)  // 第i次扫描发现了活三
 					{
@@ -738,7 +738,7 @@ exit_hua3_ais3:
 		{
 			if (left_type[l] & F_AI_A3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_AI_A3)
 					{
@@ -773,7 +773,7 @@ exit_hua3_ais3:
 		{
 			if (right_type[r] & F_AI_A3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_AI_A3)
 					{
@@ -810,7 +810,7 @@ exit_hua3_ais3:
 		{
 			if (col_type[c] & F_HU_S3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_HU_S3)  // 第i次扫描发现了活三
 					{
@@ -830,7 +830,7 @@ exit_hua3_ais3:
 		{
 			if (row_type[r] & F_HU_S3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_HU_S3)  // 第i次扫描发现了活三
 					{
@@ -850,7 +850,7 @@ exit_hua3_ais3:
 		{
 			if (left_type[l] & F_HU_S3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_HU_S3)
 					{
@@ -881,7 +881,7 @@ exit_hua3_ais3:
 		{
 			if (right_type[r] & F_HU_S3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_HU_S3)
 					{
@@ -947,7 +947,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_HU_A3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_HU_A3)  // 第i次扫描发现了活三
 					{
@@ -967,7 +967,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_HU_A3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_HU_A3)  // 第i次扫描发现了活三
 					{
@@ -987,7 +987,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_HU_A3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_HU_A3)
 					{
@@ -1020,7 +1020,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_HU_A3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_HU_A3)
 					{
@@ -1055,7 +1055,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_AI_S3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_AI_S3)  // 第i次扫描发现了活三
 					{
@@ -1073,7 +1073,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_AI_S3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_AI_S3)  // 第i次扫描发现了活三
 					{
@@ -1091,7 +1091,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_AI_S3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_AI_S3)
 					{
@@ -1120,7 +1120,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_AI_S3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_AI_S3)
 					{
@@ -1177,7 +1177,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_AI_A3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_AI_A3)  // 第i次扫描发现了活三
 					{
@@ -1197,7 +1197,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_AI_A3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_AI_A3)  // 第i次扫描发现了活三
 					{
@@ -1217,7 +1217,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_AI_A3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_AI_A3)
 					{
@@ -1250,7 +1250,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_AI_A3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_AI_A3)
 					{
@@ -1285,7 +1285,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (col_type[c] & F_HU_S3)  // 在第c列发现了活三
 			{
-				for (__int32 temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
+				for (int temp_col_chess = col_chess[c], i=0; i<10; ++i, temp_col_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_col_chess] == F_HU_S3)  // 第i次扫描发现了活三
 					{
@@ -1303,7 +1303,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (row_type[r] & F_HU_S3)  // 在第r行找到了活三
 			{
-				for (__int32 temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
+				for (int temp_row_chess = row_chess[r], i=0; i<10; ++i, temp_row_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_row_chess] == F_HU_S3)  // 第i次扫描发现了活三
 					{
@@ -1321,7 +1321,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (left_type[l] & F_HU_S3)
 			{
-				for (__int32 temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
+				for (int temp_left_chess = left_chess[l], i=0, count=getLeftCount(l); i<count; ++i, temp_left_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_left_chess] == F_HU_S3)
 					{
@@ -1350,7 +1350,7 @@ int Fubuki::findAllS3A3(Choice *choices_buffer, const Chessid cur_player) const
 		{
 			if (right_type[r] & F_HU_S3)
 			{
-				for (__int32 temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
+				for (int temp_right_chess = right_chess[r], i=0, count=getRightCount(r); i<count; ++i, temp_right_chess>>=2)
 				{
 					if (M_TABLE[MASK & temp_right_chess] == F_HU_S3)
 					{
