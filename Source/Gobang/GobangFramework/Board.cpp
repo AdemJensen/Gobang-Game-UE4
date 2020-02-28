@@ -152,11 +152,12 @@ int GF(int ori, int diff, int scale)
 {
 	return ori + diff * scale;
 }
-bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
+int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 {
+	if (getBoard(x, y) != Board::VOIDED) return 1;
 	if (useBan && player == Board::PLAYER_1)
 	{
-		if (getBoard(x, y) != Board::VOIDED) return false;
+		
 		// Judge Long-link.
 		int lens1[] = { 0, 0, 0, 0 };
 		for (int i = 0; i < 4; i++)
@@ -174,7 +175,7 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 				else break;
 			}
 		}
-		for (int i = 0; i < 4; i++) if (lens1[i] + 1 >= 6) return false;
+		for (int i = 0; i < 4; i++) if (lens1[i] + 1 >= 6) return 2;
 
 		// Judge if can win.
 		for (int i = 0; i < 4; i++)
@@ -193,11 +194,12 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 				else break;
 			}
 		}
-		for (int i = 0; i < 4; i++) if (lens1[i] + 1 == 5) return true;
+		for (int i = 0; i < 4; i++) if (lens1[i] + 1 == 5) return 0;
 		
 		int jud_type[] = { 0, 0, 0, 0 }; // 0 = none, 1 = four_round, 2 = live_three;
 		// Judge four_round
 		int bef_gap[] = { 0, 0, 0, 0 };
+		bool is_live[] = { true, true, true, true };	// Open tuf on both end
 		int aft_gap[] = { 0, 0, 0, 0 };
 		int bef_gap_for3[] = { 0, 0, 0, 0 };
 		int aft_gap_for3[] = { 0, 0, 0, 0 };
@@ -225,6 +227,7 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					}
 					else
 					{
+						is_live[i] = false;
 						break;
 					}
 				}
@@ -237,6 +240,7 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					else
 					{
 						if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED) aft_gap_for3[i] = aft_gap[i];
+						else is_live[i] = false;
 						break;
 					}
 				}
@@ -259,6 +263,7 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					}
 					else
 					{
+						is_live[i] = false;
 						break;
 					}
 				}
@@ -270,7 +275,8 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					}
 					else
 					{
-						if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED) aft_gap_rev_for3[i] = aft_gap_rev[i];
+						if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == Board::VOIDED) aft_gap_rev_for3[i] = aft_gap_rev[i];
+						else is_live[i] = false;
 						break;
 					}
 				}
@@ -284,21 +290,18 @@ bool Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 			{
 				forster_four_num++;
 			}
-			else if (bef_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3)
+			else if ((bef_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3) && is_live[i])
 			{ // Judge live_three:appended
 				live_three_num++;
 			}
-			else if (bef_gap_for3[i] + aft_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 4 || bef_gap_rev_for3[i] + aft_gap_rev_for3[i] + bef_gap_for3[i] + 1 == 4)
+			else if ((bef_gap_for3[i] + aft_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3 || bef_gap_rev_for3[i] + aft_gap_rev_for3[i] + bef_gap_for3[i] + 1 == 3) && is_live[i])
 			{ // Judge live_three:heaped
 				live_three_num++;
 			}
 		}
-		if (live_three_num >= 2) return false;
-		if (forster_four_num >= 2) return false;
-		return true;
+		if (live_three_num >= 2) return 2;
+		if (forster_four_num >= 2) return 2;
+		return 0;
 	}
-	else
-	{
-		return Board::board[x][y] == 0;
-	}
+	return 0;
 }

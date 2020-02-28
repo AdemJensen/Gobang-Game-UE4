@@ -3,7 +3,10 @@
 
 #include "GobangPlayerPawn.h"
 #include "GobangGameModeBase.h"
-#include "ChessLocationTrigger.h"
+#include "Basics/BoardTrigger.h"
+#include "Basics/ProgramStage.h"
+#include "Basics/BanMode.h"
+#include "Players/GamePlayerType.h"
 
 // Sets default values
 AGobangPlayerPawn::AGobangPlayerPawn()
@@ -20,18 +23,14 @@ void AGobangPlayerPawn::BeginPlay()
 	
 }
 
-void AGobangPlayerPawn::TriggerClick()
-{
-	GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Mouse click detected."));
-}
-
+#if PLATFORM_WINDOWS || PLATFORM_MAC || PLATFORM_LINUX
 void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, bool bDrawDebugHelpers)
 {
 	FHitResult HitResult;
 	UWorld* TheWorld = GetWorld();
 	AGameModeBase* GameMode = UGameplayStatics::GetGameMode(TheWorld);
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(GameMode);
-	if (MyGameMode->Manager->GetCurrentStatus() < 2) return;
+	if (MyGameMode->GameManager->GetProgramStage() != EProgramStage::IN_GAME) return;
 	TheWorld->LineTraceSingleByChannel(HitResult, Start, End, ECC_Visibility);
 	if (bDrawDebugHelpers)	// Onlu used via VR.
 	{
@@ -41,22 +40,33 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 	if (HitResult.Actor.IsValid())
 	{
 		AActor* HitActor = HitResult.Actor.Get();
-		AChessLocationTrigger* BoardIndicator = Cast<AChessLocationTrigger>(HitActor);
+		ABoardTrigger* BoardIndicator = Cast<ABoardTrigger>(HitActor);
 		
 		if (BoardIndicator != nullptr)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
-			MyGameMode->Manager->SetPlayerIndicator(
-				BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
-				MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer())
-			);
+			if (MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
+			{
+				int Avail = MyGameMode->GameManager->BoardManager->IsAvailable(
+					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y,
+					MyGameMode->GameManager->PublicManager->GetCurrentPlayer()
+				);
+				MyGameMode->GameManager->IndicationManager->SetPlayerIndicator(
+					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
+					(MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILEGAL_BANNED || Avail == 0) && Avail != 1
+				);
+
+			}
 		}
 		else
 		{
-			MyGameMode->Manager->HidePlayerIndicator();
+			MyGameMode->GameManager->IndicationManager->HidePlayerIndicator();
 		}
 	}
 }
+#else
+void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, bool bDrawDebugHelpers) { }
+#endif
 
 // Called every frame
 void AGobangPlayerPawn::Tick(float DeltaTime)
