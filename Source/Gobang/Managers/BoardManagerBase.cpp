@@ -63,7 +63,7 @@ int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 	int Avail = IsAvailable(X, Y, ChessType);
 	if (Avail == 1) return 1;
 	board.placeChess((ChessType == EChessType::BLACK ? 1 : 2), X, Y);
-	AChess* ChessObj = GetWorld()->SpawnActor<AChess>(Location_LU + FVector(unitX * X, unitY * Y, 0), FRotator(0, 0, 0));
+	AChess* ChessObj = GetWorld()->SpawnActor<AChess>(Location_LU + FVector(unitX * X, unitY * Y, 1), FRotator(0, 0, 0));
 	if (ChessObj != nullptr)
 	{
 		ChessObj->SetChessColor(ChessType == EChessType::BLACK);

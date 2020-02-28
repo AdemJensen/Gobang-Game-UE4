@@ -122,7 +122,7 @@ void Fubuki::initMTable()
 
 	int scanner[6];
 	int ai_l, hu_l, ai_r, hu_r;
-	__int32 bits_line;
+	int bits_line;
 	int empty_pos[6], empty_cnt;
 
 	// 枚举所有棋型，把没有INIT的给INIT

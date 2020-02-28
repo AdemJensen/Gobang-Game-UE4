@@ -29,6 +29,11 @@ public:
 
 	UFUNCTION()
 		void TriggerClicked(UPrimitiveComponent* ClickedComp, FKey ButtonClicked);
+	UFUNCTION()
+		void OnFingerPressedTrigger(ETouchIndex::Type FingerIndex, UPrimitiveComponent* TouchedComponent);
+
+	UFUNCTION()
+		void HandleClick();
 
 	UFUNCTION()
 		void TimerAction();

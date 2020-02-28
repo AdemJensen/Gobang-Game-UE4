@@ -119,8 +119,8 @@ void Fubuki::putChess(const int x, const int y, const Chessid id)
 {
 //	xor_sum ^= zobrist[id][y][x];
 	mirror_board[y][x] = id;
-	__int32 idl2y = id << 2*y;
-	__int32 idl2x = id << 2*x;
+	int idl2y = id << 2*y;
+	int idl2x = id << 2*x;
 
 	col_chess[x] |= idl2y;
 	row_chess[y] |= idl2x;
@@ -152,8 +152,8 @@ void Fubuki::takeChess(const int x, const int y)
 {
 //	xor_sum ^= zobrist[id][y][x];
 	mirror_board[y][x] = 0;
-	__int32 a3l2y = ~(3 << 2*y);
-	__int32 a3l2x = ~(3 << 2*x);
+	int a3l2y = ~(3 << 2*y);
+	int a3l2x = ~(3 << 2*x);
 
 	col_chess[x] &= a3l2y;
 	row_chess[y] &= a3l2x;
@@ -182,8 +182,8 @@ void Fubuki::takeChess(const int x, const int y)
 void Fubuki::updateChessType(const int x, const int y)
 {
 	int count, i;
-	__int32 temp1 = col_type[x];
-	__int32 temp2 = row_type[y];
+	int temp1 = col_type[x];
+	int temp2 = row_type[y];
 
 	{
 		// 删除之前的行列棋型

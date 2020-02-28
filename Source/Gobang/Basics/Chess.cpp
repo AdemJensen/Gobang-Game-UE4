@@ -25,7 +25,7 @@ AChess::AChess()
 		Mesh->SetGenerateOverlapEvents(false);
 		Mesh->SetVisibility(false);
 		IsColoredNow = false;
-		//Mesh->SetWorldScale3D(FVector(0.25, 0.25, 0.25));
+		Mesh->SetWorldScale3D(FVector(1.2, 1.2, 1.2));
 	}
 
 	Mesh_White = CreateDefaultSubobject<UStaticMesh>("Mesh_White");

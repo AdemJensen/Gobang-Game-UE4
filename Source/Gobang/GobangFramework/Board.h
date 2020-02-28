@@ -6,7 +6,7 @@
 class Board	// Gobang chess board
 {
 private:
-	const static int SIZE = 19;	// Enlarged gobang board size
+	const static int SIZE = 15;	// Enlarged gobang board size
 	
 	std::stack< std::pair<int, int> > moves;
 	
