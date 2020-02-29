@@ -60,6 +60,7 @@ void ABoardManagerBase::RemoveGameBoard()
 
 int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 {
+	WinDir = -1;
 	int Avail = IsAvailable(X, Y, ChessType);
 	if (Avail == 1) return 1;
 	board.placeChess((ChessType == EChessType::BLACK ? 1 : 2), X, Y);
@@ -73,12 +74,25 @@ int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 	return Avail;
 }
 
+TArray<FIntPoint> ABoardManagerBase::GetReviewData()
+{
+	std::stack< std::pair<int, int> > ReviewData = board.getReviewData();
+	TArray<FIntPoint> Result;
+	while (!ReviewData.empty())
+	{
+		Result.Insert(FIntPoint(ReviewData.top().first, ReviewData.top().second), 0);
+		ReviewData.pop();
+	}
+	return Result;
+}
+
 int32 ABoardManagerBase::GetWinner() {
 	return board.getWinner(); 
 }
 
 std::pair<FIntPoint, FIntPoint> ABoardManagerBase::RetractChess()
 {
+	WinDir = -1;
 	if (Chesses.Num() < 2) return std::make_pair(FIntPoint(-1, -1), FIntPoint(-1, -1));
 	FIntPoint Point1, Point2;
 	Point1 = FIntPoint(board.getLastChess().first, board.getLastChess().second);
@@ -90,6 +104,18 @@ std::pair<FIntPoint, FIntPoint> ABoardManagerBase::RetractChess()
 	Chesses.RemoveAt(Chesses.Num() - 1);
 	Chesses.RemoveAt(Chesses.Num() - 1);
 	return std::make_pair(Point1, Point2);
+}
+
+FIntPoint ABoardManagerBase::RetractChessHalf()
+{
+	WinDir = -1;
+	if (Chesses.Num() < 1) return FIntPoint(-1, -1);
+	FIntPoint Point;
+	Point = FIntPoint(board.getLastChess().first, board.getLastChess().second);
+	board.retract();
+	Chesses[Chesses.Num() - 1]->Destroy();
+	Chesses.RemoveAt(Chesses.Num() - 1);
+	return Point;
 }
 
 FIntPoint ABoardManagerBase::GetWinPosition()

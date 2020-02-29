@@ -41,11 +41,11 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Presentations")
 		void ShowWinIndication(FIntPoint Location, int32 Direction);
 	UFUNCTION(BlueprintCallable, Category = "Presentations")
-		void ShowIlegalIndication(FIntPoint Location);
+		void ShowIllegalIndication(FIntPoint Location);
 	UFUNCTION(BlueprintCallable, Category = "Presentations")
 		void HideWinIndication();
 	UFUNCTION(BlueprintCallable, Category = "Presentations")
-		void HideIlegalIndication();
+		void HideIllegalIndication();
 
 protected:
 	// Called when the game starts or when spawned
@@ -70,16 +70,16 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
 		USoundWave* WinIndicationSound;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Presentations")
-		USoundWave* IlegalIndicationSound;
+		USoundWave* IllegalIndicationSound;
 
 	TArray<ABoardIndicator*> WinIndicators;
 	ABlinkHelper* WinIndicationHelper;
 	void ShowWinIndication_ShowDelegate();
 	void ShowWinIndication_HideDelegate();
-	ABoardIndicator* IlegalIndicator;
-	ABlinkHelper* IlegalIndicationHelper;
-	void ShowIlegalIndication_ShowDelegate();
-	void ShowIlegalIndication_HideDelegate();
+	ABoardIndicator* IllegalIndicator;
+	ABlinkHelper* IllegalIndicationHelper;
+	void ShowIllegalIndication_ShowDelegate();
+	void ShowIllegalIndication_HideDelegate();
 
 public:	
 	// Called every frame

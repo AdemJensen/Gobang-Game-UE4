@@ -199,7 +199,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 		int jud_type[] = { 0, 0, 0, 0 }; // 0 = none, 1 = four_round, 2 = live_three;
 		// Judge four_round
 		int bef_gap[] = { 0, 0, 0, 0 };
-		bool is_live[] = { true, true, true, true };	// Open tuf on both end
+		int live_breaker[] = { 0, 0, 0, 0 };	// Open tuf if 0, either side for 1, both side for 2
 		int aft_gap[] = { 0, 0, 0, 0 };
 		int bef_gap_for3[] = { 0, 0, 0, 0 };
 		int aft_gap_for3[] = { 0, 0, 0, 0 };
@@ -227,7 +227,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					}
 					else
 					{
-						is_live[i] = false;
+						live_breaker[i]++;
 						break;
 					}
 				}
@@ -240,7 +240,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					else
 					{
 						if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED) aft_gap_for3[i] = aft_gap[i];
-						else is_live[i] = false;
+						else live_breaker[i]++;
 						break;
 					}
 				}
@@ -263,7 +263,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					}
 					else
 					{
-						is_live[i] = false;
+						live_breaker[i]++;
 						break;
 					}
 				}
@@ -276,7 +276,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					else
 					{
 						if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == Board::VOIDED) aft_gap_rev_for3[i] = aft_gap_rev[i];
-						else is_live[i] = false;
+						else live_breaker[i]++;
 						break;
 					}
 				}
@@ -286,15 +286,15 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 		int forster_four_num = 0;
 		for (int i = 0; i < 4; i++)
 		{
-			if (bef_gap[i] + aft_gap[i] + bef_gap_rev[i] + 1 == 4 || bef_gap_rev[i] + aft_gap_rev[i] + bef_gap[i] + 1 == 4)
+			if ((bef_gap[i] + aft_gap[i] + bef_gap_rev[i] + 1 == 4 || bef_gap_rev[i] + aft_gap_rev[i] + bef_gap[i] + 1 == 4) && live_breaker[i] < 2)
 			{
 				forster_four_num++;
 			}
-			else if ((bef_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3) && is_live[i])
+			else if ((bef_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3) && live_breaker[i] == 0)
 			{ // Judge live_three:appended
 				live_three_num++;
 			}
-			else if ((bef_gap_for3[i] + aft_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3 || bef_gap_rev_for3[i] + aft_gap_rev_for3[i] + bef_gap_for3[i] + 1 == 3) && is_live[i])
+			else if ((bef_gap_for3[i] + aft_gap_for3[i] + bef_gap_rev_for3[i] + 1 == 3 || bef_gap_rev_for3[i] + aft_gap_rev_for3[i] + bef_gap_for3[i] + 1 == 3) && live_breaker[i] == 0)
 			{ // Judge live_three:heaped
 				live_three_num++;
 			}

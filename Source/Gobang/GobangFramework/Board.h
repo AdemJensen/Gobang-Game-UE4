@@ -24,6 +24,8 @@ public:
 	Board();
 	Board(bool useBanMode);
 
+	std::stack< std::pair<int, int> > getReviewData() { return moves; }
+
 	void setBanMode(bool useBanMode) { useBan = useBanMode; }
 	bool getBanMode() { return useBan; }
 

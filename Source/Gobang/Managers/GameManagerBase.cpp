@@ -83,7 +83,17 @@ void AGameManagerBase::DoUnexpectedAction(EUnexpectedGameActionType Type)
 
 void AGameManagerBase::DoRetract()
 {
-	if (PublicManager->GetGameStage() == EGameStage::WAIT_FOR_ACTION)
+	if (PublicManager->GetGameStage() == EGameStage::CHECKMATE)
+	{
+		PublicManager->SetGameStage(EGameStage::RETRACTED);
+		GameThread->RestartDowncount();
+	}
+	else if (PublicManager->GetGameStage() == EGameStage::ILLEGAL_ACTION)
+	{
+		PublicManager->SetGameStage(EGameStage::RETRACTED_HALF);
+		GameThread->RestartDowncount();
+	}
+	else if (PublicManager->GetGameStage() == EGameStage::WAIT_FOR_ACTION)
 	{
 		PublicManager->SetGameStage(EGameStage::RETRACTED);
 	}

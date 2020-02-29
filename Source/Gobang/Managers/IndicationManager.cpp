@@ -90,10 +90,10 @@ void AIndicationManager::ShowWinIndication(FIntPoint Location, int32 Direction)
 	WinIndicationHelper->StartBlink(0.5, 0.3, 5, false);
 }
 
-void AIndicationManager::ShowIlegalIndication(FIntPoint Location)
+void AIndicationManager::ShowIllegalIndication(FIntPoint Location)
 {
-	IlegalIndicator->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y, 1.4));
-	IlegalIndicationHelper->StartBlink(0.5, 0.3, 5, false);
+	IllegalIndicator->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y, 1.4));
+	IllegalIndicationHelper->StartBlink(0.5, 0.3, 5, false);
 }
 
 void AIndicationManager::HideWinIndication()
@@ -101,9 +101,9 @@ void AIndicationManager::HideWinIndication()
 	ShowWinIndication_HideDelegate();
 }
 
-void AIndicationManager::HideIlegalIndication()
+void AIndicationManager::HideIllegalIndication()
 {
-	ShowIlegalIndication_HideDelegate();
+	ShowIllegalIndication_HideDelegate();
 }
 
 // Called when the game starts or when spawned
@@ -133,11 +133,11 @@ void AIndicationManager::BeginPlay()
 	WinIndicationHelper->ShowSignDelegate.AddUObject(this, &AIndicationManager::ShowWinIndication_ShowDelegate);
 	WinIndicationHelper->HideSignDelegate.AddUObject(this, &AIndicationManager::ShowWinIndication_HideDelegate);
 
-	IlegalIndicationHelper = TheWorld->SpawnActor<ABlinkHelper>(FVector(0, 0, 0), FRotator(0, 0, 0));
-	IlegalIndicator = TheWorld->SpawnActor<ABoardIndicator>(FVector(0, 0, 0), FRotator(0, 0, 0));
-	IlegalIndicator->SetIndicatorColor(2);
-	IlegalIndicationHelper->ShowSignDelegate.AddUObject(this, &AIndicationManager::ShowIlegalIndication_ShowDelegate);
-	IlegalIndicationHelper->HideSignDelegate.AddUObject(this, &AIndicationManager::ShowIlegalIndication_HideDelegate);
+	IllegalIndicationHelper = TheWorld->SpawnActor<ABlinkHelper>(FVector(0, 0, 0), FRotator(0, 0, 0));
+	IllegalIndicator = TheWorld->SpawnActor<ABoardIndicator>(FVector(0, 0, 0), FRotator(0, 0, 0));
+	IllegalIndicator->SetIndicatorColor(2);
+	IllegalIndicationHelper->ShowSignDelegate.AddUObject(this, &AIndicationManager::ShowIllegalIndication_ShowDelegate);
+	IllegalIndicationHelper->HideSignDelegate.AddUObject(this, &AIndicationManager::ShowIllegalIndication_HideDelegate);
 }
 
 void AIndicationManager::ShowWinIndication_ShowDelegate()
@@ -157,15 +157,15 @@ void AIndicationManager::ShowWinIndication_HideDelegate()
 	}
 }
 
-void AIndicationManager::ShowIlegalIndication_ShowDelegate()
+void AIndicationManager::ShowIllegalIndication_ShowDelegate()
 {
-	IlegalIndicator->SetIndicatorVisibility(true);
-	UGameplayStatics::PlaySound2D(GetWorld(), IlegalIndicationSound);
+	IllegalIndicator->SetIndicatorVisibility(true);
+	UGameplayStatics::PlaySound2D(GetWorld(), IllegalIndicationSound);
 }
 
-void AIndicationManager::ShowIlegalIndication_HideDelegate()
+void AIndicationManager::ShowIllegalIndication_HideDelegate()
 {
-	IlegalIndicator->SetIndicatorVisibility(false);
+	IllegalIndicator->SetIndicatorVisibility(false);
 }
 
 // Called every frame
