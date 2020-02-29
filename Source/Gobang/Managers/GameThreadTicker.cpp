@@ -37,10 +37,9 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 		if (MyGameMode->GameManager->BoardManager->PlaceChess(ActionPoint.X, ActionPoint.Y, Player->GetChessType()) != 0)	// Ilegal action.
 		{
 			//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Ilegal action."));
-			if (Player->GetChessType() != EChessType::BLACK)
+			if (Player->GetChessType() != EChessType::BLACK)	// Only black chess can have balance breakers.
 			{
-				GameEndAction.Broadcast(EEndGameReason::BLACK_ERROR);
-				this->Interrupt();
+				OnGameOver(EEndGameReason::BLACK_ERROR);
 			}
 			else
 			{
@@ -52,9 +51,7 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 				}
 				else
 				{
-					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-					MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-					GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ILEGAL_ACTION : EEndGameReason::WHITE_ILEGAL_ACTION);
+					OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ILEGAL_ACTION : EEndGameReason::WHITE_ILEGAL_ACTION);
 					return;
 				}
 				this->Interrupt();
@@ -71,8 +68,7 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 			//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Black win."));
 			if (Player->GetChessType() != EChessType::BLACK)
 			{
-				GameEndAction.Broadcast(EEndGameReason::BLACK_ERROR);
-				this->Interrupt();
+				OnGameOver(EEndGameReason::BLACK_ERROR);
 			}
 			else
 			{
@@ -80,22 +76,19 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 				{
 					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::CHECKMATE);
 					OnCritical(EEndGameReason::BLACK_APPEND_5);
+					this->Interrupt();
 				}
 				else
 				{
-					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-					MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-					GameEndAction.Broadcast(EEndGameReason::BLACK_APPEND_5);
+					OnGameOver(EEndGameReason::BLACK_APPEND_5);
 				}
-				this->Interrupt();
 			}
 			break;
 		case 2: // White win
 			//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("White win."));
 			if (Player->GetChessType() != EChessType::WHITE)
 			{
-				GameEndAction.Broadcast(EEndGameReason::WHITE_ERROR);
-				this->Interrupt();
+				OnGameOver(EEndGameReason::WHITE_ERROR);
 			}
 			else
 			{
@@ -103,29 +96,21 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 				{
 					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::CHECKMATE);
 					OnCritical(EEndGameReason::WHITE_APPEND_5);
+					this->Interrupt();
 				}
 				else
 				{
-					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-					MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-					GameEndAction.Broadcast(EEndGameReason::WHITE_APPEND_5);
+					OnGameOver(EEndGameReason::WHITE_APPEND_5);
 				}
-				this->Interrupt();
 			}
 			break;
 		case -1: // Board full
-			MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-			MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-			GameEndAction.Broadcast(EEndGameReason::DRAW_BOARD_FULL);
-			this->Interrupt();
+			OnGameOver(EEndGameReason::DRAW_BOARD_FULL);
 			break;
 		}
 		break;
 	case EGameStage::SURROUNDERED:
-		MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-		MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-		GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_SURROUNDER : EEndGameReason::WHITE_SURROUNDER);
-		this->Interrupt();
+		OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_SURROUNDER : EEndGameReason::WHITE_SURROUNDER);
 		return;
 	case EGameStage::RETRACTED:
 		//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, TEXT("Retract Mode."));
@@ -133,10 +118,7 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 		if (Player->GetRetractRemainTimes() == 0)
 		{
 			// Error
-			MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-			MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-			GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
-			this->Interrupt();
+			OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
 			return;
 		}
 		else
@@ -145,10 +127,7 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 			RetractResult = MyGameMode->GameManager->BoardManager->RetractChess();
 			if (RetractResult.second.X < 0)
 			{
-				MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-				MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-				GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
-				this->Interrupt();
+				OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
 				return;
 			}
 			else
@@ -164,13 +143,20 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 		}
 		break;
 	default:
-		MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
-		MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
-		GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
-		this->Interrupt();
+		OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
 		return;
 	}
 	
+}
+
+void AGameThreadTicker::OnGameOver(EEndGameReason Reason)
+{
+	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
+	MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
+	MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
+	MyGameMode->GameManager->SetReviewData(MyGameMode->GameManager->BoardManager->GetReviewData());
+	GameEndAction.Broadcast(Reason);
+	this->Interrupt();
 }
 
 void AGameThreadTicker::OnTimeUp()
@@ -197,6 +183,7 @@ void AGameThreadTicker::OnCritical(EEndGameReason Reason)
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	EChessType NextType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EChessType::WHITE : EChessType::BLACK;
 	MyGameMode->GameManager->PublicManager->SetCurrentPlayer(NextType);
+	MyGameMode->GameManager->SetReviewData(MyGameMode->GameManager->BoardManager->GetReviewData());
 	CriticalAction.Broadcast(Reason);
 }
 

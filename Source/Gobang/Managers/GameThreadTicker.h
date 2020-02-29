@@ -53,6 +53,7 @@ public:
 	void OnRoundOver(); // Called inside for Thread.
 
 	void OnRemainChanged(float TimeRemain);
+	void OnGameOver(EEndGameReason Reason);
 	void OnTimeUp();
 
 	void Interrupt();

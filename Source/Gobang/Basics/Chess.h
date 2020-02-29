@@ -27,7 +27,8 @@ public:
 
 	bool IsColoredNow;
 
-	void SetChessColor(bool IsBlack);
+	UFUNCTION(BlueprintCallable, Category = "Actions")
+		void SetChessColor(bool IsBlack);
 
 protected:
 	// Called when the game starts or when spawned

@@ -44,6 +44,9 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		bool IsOver() { return board.isOver(); }
 
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		TArray<FIntPoint> GetReviewData();
+
 	/*
 	The winner can only be:
 		0: None.

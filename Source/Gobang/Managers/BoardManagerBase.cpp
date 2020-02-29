@@ -74,6 +74,18 @@ int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 	return Avail;
 }
 
+TArray<FIntPoint> ABoardManagerBase::GetReviewData()
+{
+	std::stack< std::pair<int, int> > ReviewData = board.getReviewData();
+	TArray<FIntPoint> Result;
+	while (!ReviewData.empty())
+	{
+		Result.Insert(FIntPoint(ReviewData.top().first, ReviewData.top().second), 0);
+		ReviewData.pop();
+	}
+	return Result;
+}
+
 int32 ABoardManagerBase::GetWinner() {
 	return board.getWinner(); 
 }

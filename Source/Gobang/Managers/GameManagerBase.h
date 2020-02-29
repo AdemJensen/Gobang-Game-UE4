@@ -80,6 +80,11 @@ public:
 		AGamePlayerBase* GetGamePlayer(EChessType PlayerType) { return PlayerType == EChessType::BLACK ? GamePlayer_Black : GamePlayer_White; }
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetGamePlayer(EChessType PlayerType, AGamePlayerBase* GamePlayer);
+
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		TArray<FIntPoint> GetReviewData() { return ReviewData; }
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		void SetReviewData(TArray<FIntPoint> DataSource) { ReviewData = DataSource; }
 	
 
 protected:
@@ -94,6 +99,9 @@ protected:
 		AGamePlayerBase* GamePlayer_Black;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Game Info")
 		AGamePlayerBase* GamePlayer_White;
+
+	UPROPERTY(EditAnywhere, Category = "Game Info")
+		TArray<FIntPoint> ReviewData;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
