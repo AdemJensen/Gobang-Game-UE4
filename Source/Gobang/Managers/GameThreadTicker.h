@@ -28,6 +28,9 @@ public:
 		FRetractAction RetractAction;
 
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
+		FGameEndAction CriticalAction;
+
+	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
 		FGameEndAction GameEndAction;
 
 	UPROPERTY(BlueprintAssignable, EditAnywhere, BlueprintReadWrite, Category = "Game Actions")
@@ -46,6 +49,7 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		FIntPoint GetActionPoint() { return ActionPoint; }
 
+	void OnCritical(EEndGameReason Reason); // Called inside for Thread.
 	void OnRoundOver(); // Called inside for Thread.
 
 	void OnRemainChanged(float TimeRemain);

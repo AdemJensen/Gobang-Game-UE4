@@ -60,6 +60,7 @@ void ABoardManagerBase::RemoveGameBoard()
 
 int ABoardManagerBase::PlaceChess(int32 X, int32 Y, EChessType ChessType)
 {
+	WinDir = -1;
 	int Avail = IsAvailable(X, Y, ChessType);
 	if (Avail == 1) return 1;
 	board.placeChess((ChessType == EChessType::BLACK ? 1 : 2), X, Y);
@@ -79,6 +80,7 @@ int32 ABoardManagerBase::GetWinner() {
 
 std::pair<FIntPoint, FIntPoint> ABoardManagerBase::RetractChess()
 {
+	WinDir = -1;
 	if (Chesses.Num() < 2) return std::make_pair(FIntPoint(-1, -1), FIntPoint(-1, -1));
 	FIntPoint Point1, Point2;
 	Point1 = FIntPoint(board.getLastChess().first, board.getLastChess().second);
