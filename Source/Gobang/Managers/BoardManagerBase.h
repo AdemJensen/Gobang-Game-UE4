@@ -36,7 +36,7 @@ public:
 	Place a chess on the world board.
 		0: Success.
 		1: Location taken.
-		2: Ilegal.
+		2: Illegal.
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
 		int PlaceChess(int32 X, int32 Y, EChessType ChessType);

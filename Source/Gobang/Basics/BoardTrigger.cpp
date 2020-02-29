@@ -53,7 +53,7 @@ void ABoardTrigger::OnFingerPressedTrigger(ETouchIndex::Type FingerIndex, UPrimi
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	EChessType CurrentType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer();
 	MyGameMode->GameManager->IndicationManager->HidePlayerIndicator();
-	if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILEGAL_BANNED
+	if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILLEGAL_BANNED
 		&& MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) != 0
 		|| MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) == 1)
 	{
@@ -71,7 +71,7 @@ void ABoardTrigger::HandleClick()
 	if (MyGameMode->GameManager->GetProgramStage() == EProgramStage::IN_GAME 
 		&& MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
 	{
-		if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILEGAL_BANNED 
+		if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILLEGAL_BANNED 
 			&& MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) != 0
 			|| MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) == 1)
 		{

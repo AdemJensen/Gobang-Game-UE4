@@ -53,7 +53,7 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 				);
 				MyGameMode->GameManager->IndicationManager->SetPlayerIndicator(
 					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, 
-					(MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILEGAL_BANNED || Avail == 0) && Avail != 1
+					(MyGameMode->GameManager->PublicManager->GetBanMode() != EBanMode::ON_ILLEGAL_BANNED || Avail == 0) && Avail != 1
 				);
 
 			}

@@ -88,7 +88,7 @@ void AGameManagerBase::DoRetract()
 		PublicManager->SetGameStage(EGameStage::RETRACTED);
 		GameThread->RestartDowncount();
 	}
-	else if (PublicManager->GetGameStage() == EGameStage::ILEGAL_ACTION)
+	else if (PublicManager->GetGameStage() == EGameStage::ILLEGAL_ACTION)
 	{
 		PublicManager->SetGameStage(EGameStage::RETRACTED_HALF);
 		GameThread->RestartDowncount();

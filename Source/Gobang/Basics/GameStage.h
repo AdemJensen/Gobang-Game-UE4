@@ -25,7 +25,7 @@ enum class EGameStage : uint8
 
     TIME_UP = 71                UMETA(DisplayName = "Time up"),
     
-    ILEGAL_ACTION = 99          UMETA(DisplayName = "Ilegal action appeared, waiting for retract"),
+    ILLEGAL_ACTION = 99         UMETA(DisplayName = "Illegal action appeared, waiting for retract"),
     CHECKMATE = 100             UMETA(DisplayName = "Append 5 appeared, waiting for retract"),
     // 101 ~ X post game.
     GAME_OVER = 101             UMETA(DisplayName = "There is a winner for sure")
