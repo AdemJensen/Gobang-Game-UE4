@@ -56,8 +56,6 @@ public:
 	void OnGameOver(EEndGameReason Reason);
 	void OnTimeUp();
 
-	void Interrupt();
-
 protected:
 
 	float TimeLimit = 30.0f;

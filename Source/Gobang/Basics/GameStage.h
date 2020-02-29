@@ -19,12 +19,13 @@ enum class EGameStage : uint8
     ROUND_OVER = 62             UMETA(DisplayName = "Round over (Action made)"),
     SURROUNDERED = 63           UMETA(DisplayName = "Surroundered"),
     UNEXPECTED_ACTION = 64      UMETA(DisplayName = "Unexpected action occured"),
-    RETRACTED = 65              UMETA(DisplayName = "Retracted"),
+    RETRACTED = 65              UMETA(DisplayName = "Retracted (Two steps)"),
+    RETRACTED_HALF = 66         UMETA(DisplayName = "Retracted (One step)"),
 
 
     TIME_UP = 71                UMETA(DisplayName = "Time up"),
     
-    ILEGAL_ACTION = 99          UMETA(DisplayName = "Ilegal action appeared, waiting for retract"),
+    ILLEGAL_ACTION = 99         UMETA(DisplayName = "Illegal action appeared, waiting for retract"),
     CHECKMATE = 100             UMETA(DisplayName = "Append 5 appeared, waiting for retract"),
     // 101 ~ X post game.
     GAME_OVER = 101             UMETA(DisplayName = "There is a winner for sure")

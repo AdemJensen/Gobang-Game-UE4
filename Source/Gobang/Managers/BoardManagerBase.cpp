@@ -106,6 +106,18 @@ std::pair<FIntPoint, FIntPoint> ABoardManagerBase::RetractChess()
 	return std::make_pair(Point1, Point2);
 }
 
+FIntPoint ABoardManagerBase::RetractChessHalf()
+{
+	WinDir = -1;
+	if (Chesses.Num() < 1) return FIntPoint(-1, -1);
+	FIntPoint Point;
+	Point = FIntPoint(board.getLastChess().first, board.getLastChess().second);
+	board.retract();
+	Chesses[Chesses.Num() - 1]->Destroy();
+	Chesses.RemoveAt(Chesses.Num() - 1);
+	return Point;
+}
+
 FIntPoint ABoardManagerBase::GetWinPosition()
 {
 	if (WinDir == -1)

@@ -16,6 +16,7 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	AGamePlayerBase* Player = MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer());
 	std::pair<FIntPoint, FIntPoint> RetractResult;
+	FIntPoint RetractHalfResult;
 	int32 BoardResult;
 	//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Master Thread is running."));
 	switch (MyGameMode->GameManager->PublicManager->GetGameStage())
@@ -34,24 +35,25 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 		break;
 	case EGameStage::ROUND_OVER:
 		// Logics to judge win or lose
-		if (MyGameMode->GameManager->BoardManager->PlaceChess(ActionPoint.X, ActionPoint.Y, Player->GetChessType()) != 0)	// Ilegal action.
+		if (MyGameMode->GameManager->BoardManager->PlaceChess(ActionPoint.X, ActionPoint.Y, Player->GetChessType()) != 0)	// Illegal action.
 		{
-			//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Ilegal action."));
+			MyGameMode->GameManager->IndicationManager->HideLastIndicator();
+			//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Illegal action."));
 			if (Player->GetChessType() != EChessType::BLACK)	// Only black chess can have balance breakers.
 			{
 				OnGameOver(EEndGameReason::BLACK_ERROR);
 			}
 			else
 			{
-				if (MyGameMode->GameManager->GetGamePlayer(EChessType::WHITE)->GetRetractRemainTimes() != 0)
+				if (MyGameMode->GameManager->GetGamePlayer(EChessType::BLACK)->GetRetractRemainTimes() != 0)
 				{
-					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::ILEGAL_ACTION);
-					OnCritical(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ILEGAL_ACTION : EEndGameReason::WHITE_ILEGAL_ACTION);
+					MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::ILLEGAL_ACTION);
+					OnCritical(EEndGameReason::BLACK_ILLEGAL_ACTION);
 					return;
 				}
 				else
 				{
-					OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ILEGAL_ACTION : EEndGameReason::WHITE_ILEGAL_ACTION);
+					OnGameOver(EEndGameReason::BLACK_ILLEGAL_ACTION);
 					return;
 				}
 				this->Interrupt();
@@ -142,6 +144,34 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 			else MyGameMode->GameManager->IndicationManager->HideLastIndicator();
 		}
 		break;
+	case EGameStage::RETRACTED_HALF:	// This action usually used via Critical Retract Mode.
+		//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, TEXT("Retract_Half Mode."));
+		if (Player->GetRetractRemainTimes() == 0)
+		{
+			// Error
+			OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
+			return;
+		}
+		else
+		{
+			if (Player->GetRetractRemainTimes() > 0) Player->SetRetractRemainTimes(Player->GetRetractRemainTimes() - 1);
+			RetractHalfResult = MyGameMode->GameManager->BoardManager->RetractChessHalf();
+			if (RetractHalfResult.X < 0)
+			{
+				OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
+				return;
+			}
+			else
+			{
+				MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->OnRetract(RetractResult.first, RetractResult.second);
+				RetractAction.Broadcast(Player);
+				MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::WAIT_FOR_ACTION);
+			}
+			FIntPoint LastLoc = MyGameMode->GameManager->BoardManager->GetLastPosition();
+			if (LastLoc.X > 0 && LastLoc.Y > 0) MyGameMode->GameManager->IndicationManager->SetLastIndicator(LastLoc.X, LastLoc.Y);
+			else MyGameMode->GameManager->IndicationManager->HideLastIndicator();
+		}
+		break;
 	default:
 		OnGameOver(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_ERROR : EEndGameReason::WHITE_ERROR);
 		return;
@@ -151,48 +181,56 @@ void AGameThreadTicker::OnRemainChanged(float TimeRemain)
 
 void AGameThreadTicker::OnGameOver(EEndGameReason Reason)
 {
+	this->Interrupt();
+	//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Game Over."));
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::GAME_OVER);
 	MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
+	MyGameMode->GameManager->IndicationManager->HidePlayerIndicator();
+	MyGameMode->GameManager->IndicationManager->HideHintIndicator();
 	MyGameMode->GameManager->SetReviewData(MyGameMode->GameManager->BoardManager->GetReviewData());
 	GameEndAction.Broadcast(Reason);
-	this->Interrupt();
 }
 
 void AGameThreadTicker::OnTimeUp()
 {
+	this->Interrupt();
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	//TimeUpAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer()));
 	MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::TIME_UP);
 	MyGameMode->GameManager->SetProgramStage(EProgramStage::AT_RESULT_UI);
+	MyGameMode->GameManager->IndicationManager->HidePlayerIndicator();
+	MyGameMode->GameManager->IndicationManager->HideHintIndicator();
 	GameEndAction.Broadcast(MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EEndGameReason::BLACK_TIME_UP : EEndGameReason::WHITE_TIME_UP);
-	this->Interrupt();
-}
-
-void AGameThreadTicker::Interrupt()
-{
-	Super::Interrupt();
-	/*RoundOverAction.RemoveAll(this);
-	RetractAction.RemoveAll(this);
-	GameEndAction.RemoveAll(this);
-	RefreshUiAction.RemoveAll(this);*/
 }
 
 void AGameThreadTicker::OnCritical(EEndGameReason Reason)
 {
+	this->Interrupt();
+	//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Critical."));
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	EChessType NextType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EChessType::WHITE : EChessType::BLACK;
-	MyGameMode->GameManager->PublicManager->SetCurrentPlayer(NextType);
+	if (Reason == EEndGameReason::BLACK_APPEND_5 || Reason == EEndGameReason::WHITE_APPEND_5)
+	{
+		MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::CHECKMATE);
+		MyGameMode->GameManager->PublicManager->SetCurrentPlayer(NextType);
+	}
+	else
+	{
+		MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::ILLEGAL_ACTION);
+	}
 	MyGameMode->GameManager->SetReviewData(MyGameMode->GameManager->BoardManager->GetReviewData());
 	CriticalAction.Broadcast(Reason);
 }
 
 void AGameThreadTicker::OnRoundOver()
 {
+	this->Interrupt();
 	//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("OnRoundOver() Called."));
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	EChessType NextType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer() == EChessType::BLACK ? EChessType::WHITE : EChessType::BLACK;
 	MyGameMode->GameManager->PublicManager->SetCurrentPlayer(NextType);
+	MyGameMode->GameManager->IndicationManager->HideHintIndicator();
 	RoundOverAction.Broadcast(MyGameMode->GameManager->GetGamePlayer(NextType));
 	MyGameMode->GameManager->PublicManager->SetGameStage(EGameStage::WAIT_FOR_ACTION);
 	MyGameMode->GameManager->GetGamePlayer(NextType)->OnRoundStart();
