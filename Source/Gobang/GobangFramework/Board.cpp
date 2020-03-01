@@ -240,7 +240,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					else
 					{
 						if (getBoard(GF(x, MX[i], j), GF(y, MY[i], j)) == Board::VOIDED) aft_gap_for3[i] = aft_gap[i];
-						else live_breaker[i]++;
+						else if (aft_gap[i] > 0) live_breaker[i]++;
 						break;
 					}
 				}
@@ -276,7 +276,7 @@ int Board::isAvailable(int x, int y, Board::ChessPlayer player) const
 					else
 					{
 						if (getBoard(GF(x, MX[i], -j), GF(y, MY[i], -j)) == Board::VOIDED) aft_gap_rev_for3[i] = aft_gap_rev[i];
-						else live_breaker[i]++;
+						else if (aft_gap_rev[i] > 0) live_breaker[i]++;
 						break;
 					}
 				}
