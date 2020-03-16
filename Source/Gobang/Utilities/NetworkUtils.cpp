@@ -11,9 +11,9 @@ FString UNetworkUtils::GetHost(UObject* WorldContextObject)
     {
         if (UWorld* World = WorldContextObject->GetWorld())
         {
-    //        bool canBind = false;
-    //        TSharedRef<FInternetAddr> localIp = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->GetLocalHostAddr(*GLog, canBind);
-    //        return (localIp->IsValid() ? localIp->ToString(false) : World->URL.Host);
+            bool canBind = false;
+            TSharedRef<FInternetAddr> localIp = ISocketSubsystem::Get(PLATFORM_SOCKETSUBSYSTEM)->GetLocalHostAddr(*GLog, canBind);
+            return (localIp->IsValid() ? localIp->ToString(false) : World->URL.Host);
             return World->URL.Host;
         }
     }
