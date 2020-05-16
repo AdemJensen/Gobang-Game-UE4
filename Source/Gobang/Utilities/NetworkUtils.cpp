@@ -32,3 +32,19 @@ int32 UNetworkUtils::GetPortNumber(UObject* WorldContextObject)
     }
     return -1;
 }
+
+FString UNetworkUtils::DecodeNetworkMessage(FString str)
+{
+    int i, j;
+    for (i = 0; i < str.Len(); i++) {
+        if (str[i] == '{') break;
+    }
+    for (j = str.Len() - 1; j >= 0; j--) {
+        if (str[j] == '}') break;
+    }
+    return str.LeftChop(str.Len() - j - 1).RightChop(i);
+}
+FString UNetworkUtils::EncodeNetworkMessage(FString str)
+{
+    return "==========" + str + "==========";
+}
