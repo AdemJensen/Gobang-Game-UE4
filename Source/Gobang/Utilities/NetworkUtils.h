@@ -4,10 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
-#include "json.hpp"
 #include "NetworkUtils.generated.h"
-
-using Json = nlohmann::json;
 
 /**
  * 
@@ -25,7 +22,7 @@ public:
 		static int32 GetPortNumber(UObject* WorldContextObject);
 
 	UFUNCTION(BlueprintCallable, Category = "Network Utils")
-		static FString DecodeNetworkMessage(FString str);
+		static TArray<FString> DecodeNetworkMessage(FString str);
 	UFUNCTION(BlueprintCallable, Category = "Network Utils")
 		static FString EncodeNetworkMessage(FString str);
 	

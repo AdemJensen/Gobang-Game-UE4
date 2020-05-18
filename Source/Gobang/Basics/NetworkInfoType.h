@@ -36,8 +36,8 @@ enum class ENetworkInfoType : uint8
     CANCEL_READY_RESULT = 20        UMETA(DisplayName = "Cancel Ready Result"),
     LN_ENTER_ROOM_REQUEST = 21      UMETA(DisplayName = "(LAN) Enter Room Request"),
     LN_ENTER_ROOM_RESULT = 22       UMETA(DisplayName = "(LAN) Enter Room Result"),
-    PLAYER_CHANGE_MSG = 23          UMETA(DisplayName = "Player Change Message"),   // Used for OL
-    PLAYER_CHANGE_REPLY = 24        UMETA(DisplayName = "Player Change Reply"),     // Used for OL
+    OL_PLAYER_CHANGE_MSG = 23       UMETA(DisplayName = "(OL) Player Change Message"),
+    OL_PLAYER_CHANGE_REPLY = 24     UMETA(DisplayName = "(OL) Player Change Reply"),
     EXIT_ROOM_REQUEST = 25          UMETA(DisplayName = "(LAN) Exit Room Request"),
     EXIT_ROOM_RESULT = 26           UMETA(DisplayName = "(LAN) Exit Room Result"),
     GAME_SETTINGS_CHANGE_MSG = 27   UMETA(DisplayName = "Game settings change Message"),
@@ -53,10 +53,12 @@ enum class ENetworkInfoType : uint8
     GAME_START_REPLY = 50           UMETA(DisplayName = "Game Start Reply"),
 
     // 51~100 Ingame
-    SERVER_PING_MSG = 51            UMETA(DisplayName = "Server Ping Message"),     // Include the timer info, called every 0.1 second(Should have a type, normal or critical).
-    SERVER_PING_REPLY = 52          UMETA(DisplayName = "Server Ping Reply"),
-    CLIENT_ACTION_REQUEST = 53      UMETA(DisplayName = "Client Action Request"),   // Deprecated
-    CLIENT_ACTION_RESULT = 54       UMETA(DisplayName = "Client Action Result"),    // Deprecated
+    SERVER_PING_MSG = 51            UMETA(DisplayName = "Server Ping Message"),     // Deprecated // Include the timer info, called every 0.1 second(Should have a type, normal or critical).
+    SERVER_PING_REPLY = 52          UMETA(DisplayName = "Server Ping Reply"),       // Deprecated
+    CLIENT_ACTION_REQUEST = 53      UMETA(DisplayName = "Client Action Request"),
+    CLIENT_ACTION_RESULT = 54       UMETA(DisplayName = "Client Action Result"),
+    SERVER_ACTION_MSG = 55          UMETA(DisplayName = "Server Action Message"),
+    SERVER_ACTION_REPLY = 56        UMETA(DisplayName = "Server Action Reply"),
     SERVER_WARNING_MSG = 61         UMETA(DisplayName = "Server warning Message"),
     SERVER_WARNING_REPLY = 62       UMETA(DisplayName = "Server warning Reply"),    // Might not useful.
     SERVER_ERROR_MSG = 71           UMETA(DisplayName = "Server error Message"),    

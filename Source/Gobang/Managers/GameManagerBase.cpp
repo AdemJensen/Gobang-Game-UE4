@@ -48,7 +48,7 @@ void AGameManagerBase::DoGameStart()
 	GamePlayer_White->SetRetractRemainTimes(PublicManager->GetTotalRetractTimes());
 
 	// Start Master Engine
-	double TimeLimitTemp = -1;
+	/*double TimeLimitTemp = -1;
 	if (PublicManager->GetManagerType() == EPublicManagerType::SINGLE_PLAY)
 	{
 		TimeLimitTemp = PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit();
@@ -64,7 +64,8 @@ void AGameManagerBase::DoGameStart()
 			TimeLimitTemp = -1;
 		}
 	}
-	GameThread->SetTimeLimit(TimeLimitTemp);
+	GameThread->SetTimeLimit(TimeLimitTemp);*/
+	GameThread->SetTimeLimit(PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit());
 	GameThread->StartGameThread();
 }
 
