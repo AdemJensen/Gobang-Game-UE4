@@ -33,18 +33,36 @@ int32 UNetworkUtils::GetPortNumber(UObject* WorldContextObject)
     return -1;
 }
 
-FString UNetworkUtils::DecodeNetworkMessage(FString str)
+TArray<FString> UNetworkUtils::DecodeNetworkMessage(FString str)
 {
-    int i, j;
-    for (i = 0; i < str.Len(); i++) {
-        if (str[i] == '{') break;
+    int i = 0, j;
+    TArray<FString> Temp;
+    for (j = 0; j < str.Len() - 1 && i < str.Len(); j++) {
+        if (str[j] == '|' && str[j + 1] == '|') {
+            FString var = str.LeftChop(str.Len() - j - 1).RightChop(i);
+            UE_LOG(LogTemp, Warning, TEXT("%s"), *var);
+            Temp.Add(var);
+            j++;
+            i = j + 1;
+        }
     }
-    for (j = str.Len() - 1; j >= 0; j--) {
-        if (str[j] == '}') break;
+    UE_LOG(LogTemp, Warning, TEXT("OK aft split"));
+    for (int k = 0; k < Temp.Num(); k++) {
+        FString TmpStr = Temp[k];
+        UE_LOG(LogTemp, Warning, TEXT("Str to chop: %s"), *TmpStr);
+        for (i = 0; i < TmpStr.Len(); i++) {
+            if (TmpStr[i] == '{') break;
+        }
+        for (j = TmpStr.Len() - 1; j >= 0; j--) {
+            if (TmpStr[j] == '}') break;
+        }
+        Temp[k] = TmpStr.LeftChop(TmpStr.Len() - j - 1).RightChop(i);
+        UE_LOG(LogTemp, Warning, TEXT("Str chopped: %s"), *Temp[k]);
     }
-    return str.LeftChop(str.Len() - j - 1).RightChop(i);
+    
+    return Temp;
 }
 FString UNetworkUtils::EncodeNetworkMessage(FString str)
 {
-    return "==========" + str + "==========";
+    return "==========" + str + "==========||";
 }

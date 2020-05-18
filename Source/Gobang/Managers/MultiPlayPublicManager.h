@@ -22,7 +22,7 @@ public:
 	virtual EPublicManagerType GetManagerType() { return EPublicManagerType::MULTI_PLAY; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
-		AMultiPlayPublicManager* InitMultiPlayPublicManagerByValue(EBanMode BanModeValue, float HintCoolDownValue, int32 RetractTimesValue, float RoundTimeLimitValue, FString Ip, int32 Port);
+		AMultiPlayPublicManager* InitMultiPlayPublicManagerByValue(EBanMode BanModeValue, float HintCoolDownValue, int32 RetractTimesValue, float RoundTimeLimitValue, bool ThisIsServer, FString Ip, int32 Port);
 
 	UFUNCTION(BlueprintCallable, Category = "Connection Info")
 		void SetConnectionIp(FString Ip) { ConnectionIp = Ip; }
@@ -43,8 +43,5 @@ protected:
 		FString ConnectionIp = "127.0.0.1";		// This is valid when current is CLIENT.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Connection Info")
 		int32 ConnectionPort = 0;	// Server port, valid when SERVER and CLIENT.
-
-	UFUNCTION(BlueprintCallable, Category = "Network Events")
-		void OnReceiveMessage(FString Msg);
 
 };
