@@ -20,7 +20,7 @@ AIndicationManager::AIndicationManager()
 
 void AIndicationManager::SetPlayerIndicator(int32 X, int32 Y, bool IsOk)
 {
-	Indicator_Player->SetActorLocation(GetAbsolutePosition(X, Y, 1.2f));
+	Indicator_Player->SetActorLocation(GetAbsolutePosition(X, Y, 0.12));
 	//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Player indicator set to (%s)"), IsOk ? TEXT("White") : TEXT("Orange")));
 	Indicator_Player->SetIndicatorColor(IsOk ? 1 : 2);
 	Indicator_Player->SetIndicatorVisibility(true);
@@ -30,7 +30,7 @@ void AIndicationManager::HidePlayerIndicator() {
 }
 void AIndicationManager::SetHintIndicator(int32 X, int32 Y)
 {
-	Indicator_Hint->SetActorLocation(GetAbsolutePosition(X, Y, 1.1f));
+	Indicator_Hint->SetActorLocation(GetAbsolutePosition(X, Y, 0.1));
 	Indicator_Hint->SetIndicatorVisibility(true);
 }
 void AIndicationManager::HideHintIndicator() {
@@ -38,7 +38,7 @@ void AIndicationManager::HideHintIndicator() {
 }
 void AIndicationManager::SetLastIndicator(int32 X, int32 Y)
 {
-	Indicator_Last->SetActorLocation(GetAbsolutePosition(X, Y, 1.0f));
+	Indicator_Last->SetActorLocation(GetAbsolutePosition(X, Y, 0.1));
 	Indicator_Last->SetIndicatorVisibility(true);
 }
 void AIndicationManager::HideLastIndicator() {
@@ -74,16 +74,16 @@ void AIndicationManager::ShowWinIndication(FIntPoint Location, int32 Direction)
 		switch (Direction)
 		{
 		case 1:
-			Temp->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y + i, 1.4));
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y + i, 0.14));
 			break;
 		case 2:
-			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y, 1.4));
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y, 0.14));
 			break;
 		case 3:
-			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y + i, 1.4));
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y + i, 0.14));
 			break;
 		case 4:
-			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y - i, 1.4));
+			Temp->SetActorLocation(GetAbsolutePosition(Location.X + i, Location.Y - i, 0.14));
 			break;
 		}
 	}
@@ -92,7 +92,7 @@ void AIndicationManager::ShowWinIndication(FIntPoint Location, int32 Direction)
 
 void AIndicationManager::ShowIllegalIndication(FIntPoint Location)
 {
-	IllegalIndicator->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y, 1.4));
+	IllegalIndicator->SetActorLocation(GetAbsolutePosition(Location.X, Location.Y, 0.14));
 	IllegalIndicationHelper->StartBlink(0.5, 0.3, 5, false);
 }
 

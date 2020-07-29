@@ -11,14 +11,14 @@ ABoardLocator::ABoardLocator()
 	PrimaryActorTick.bCanEverTick = true;
 
 	Location = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Location"));
-	auto Mesh_Asset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/GobangObjects/whiteChess.whiteChess'"));
+	/*auto Mesh_Asset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/GobangObjects/whiteChess.whiteChess'"));
 	if (Mesh_Asset.Object != nullptr)	// if asset not found, then it's nullptr
 	{
 		Location->SetStaticMesh(Mesh_Asset.Object);
 		Location->SetSimulatePhysics(false);
 		Location->SetVisibility(false);
 		//Mesh->SetWorldScale3D(FVector(0.25, 0.25, 0.25));
-	}
+	}*/
 	SetRootComponent(Location);
 }
 

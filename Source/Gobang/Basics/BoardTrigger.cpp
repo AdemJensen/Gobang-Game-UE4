@@ -35,7 +35,7 @@ ABoardTrigger::ABoardTrigger()
 
 void ABoardTrigger::InitUtility(FVector2D size, int32 Coord_X, int32 Coord_Y, ABoardManagerBase* WorldOwnerBoard)
 {
-	Existance->SetBoxExtent(FVector((size.X / 2) > 0 ? (size.X / 2) : (-size.X / 2) , (size.Y / 2) > 0 ? (size.Y / 2) : (-size.Y / 2), 1));
+	Existance->SetBoxExtent(FVector((size.X / 2) > 0 ? (size.X / 2) : (-size.X / 2) , (size.Y / 2) > 0 ? (size.Y / 2) : (-size.Y / 2), 1.5));
 	//Existance->SetHiddenInGame(false);
 	Coordinate_X = Coord_X;
 	Coordinate_Y = Coord_Y;

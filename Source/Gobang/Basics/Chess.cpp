@@ -16,7 +16,7 @@ AChess::AChess()
 	SetRootComponent(Mesh);
 
 	Mesh_Black = CreateDefaultSubobject<UStaticMesh>("Mesh_Black");
-	auto Mesh_Black_Asset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/GobangObjects/blackChess.blackChess'"));
+	auto Mesh_Black_Asset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/GoSet/Meshes/GoStone/SM_GoStoneBlack_size1.SM_GoStoneBlack_size1'"));
 	if (Mesh_Black_Asset.Object != nullptr)	// if asset not found, then it's nullptr
 	{
 		Mesh_Black = Mesh_Black_Asset.Object;
@@ -25,11 +25,11 @@ AChess::AChess()
 		Mesh->SetGenerateOverlapEvents(false);
 		Mesh->SetVisibility(false);
 		IsColoredNow = false;
-		Mesh->SetWorldScale3D(FVector(1.2, 1.2, 1.2));
+		Mesh->SetWorldScale3D(FVector(3.25, 3.25, 3.25));
 	}
 
 	Mesh_White = CreateDefaultSubobject<UStaticMesh>("Mesh_White");
-	auto Mesh_White_Asset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/GobangObjects/whiteChess.whiteChess'"));
+	auto Mesh_White_Asset = ConstructorHelpers::FObjectFinder<UStaticMesh>(TEXT("StaticMesh'/Game/GoSet/Meshes/GoStone/SM_GoStoneWhite_size1.SM_GoStoneWhite_size1'"));
 	if (Mesh_White_Asset.Object != nullptr)	// if asset not found, then it's nullptr
 	{
 		Mesh_White = Mesh_White_Asset.Object;

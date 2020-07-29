@@ -38,6 +38,11 @@
 			"Name": "BlueprintJson",
 			"Enabled": true,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/f837e4835fbc434a853fe1ead2410b84"
+		},
+		{
+			"Name": "ImageResizUEr",
+			"Enabled": true,
+			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/670be04026664663875aadd4dea45b9d"
 		}
 	]
 }
