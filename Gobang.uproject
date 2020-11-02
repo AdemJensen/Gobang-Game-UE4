@@ -26,12 +26,12 @@
 		},
 		{
 			"Name": "GraphScreenShot",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/aab8a90c7551479081769ffd230c7e24"
 		},
 		{
 			"Name": "UAssetBrowser",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/648d582688654f7db09939af111c45b5"
 		},
 		{
@@ -41,7 +41,7 @@
 		},
 		{
 			"Name": "ImageResizUEr",
-			"Enabled": true,
+			"Enabled": false,
 			"MarketplaceURL": "com.epicgames.launcher://ue/marketplace/content/670be04026664663875aadd4dea45b9d"
 		}
 	]
