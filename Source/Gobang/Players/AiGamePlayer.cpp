@@ -10,6 +10,7 @@
 
 void AAiGamePlayer::OnGameStart()
 {
+	Super::OnGameStart();
 	Worker = nullptr;
 	if (GetAiLevel() == 3)
 	{
@@ -31,6 +32,7 @@ void AAiGamePlayer::OnGameStart()
 
 void AAiGamePlayer::OnRoundStart()
 {
+	Super::OnRoundStart();
 	//*DEBUG*/GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, TEXT("Ai Got round start info."));
 	Worker->Start();
 	AiTimerDelegate = FTimerDelegate::CreateUObject(this, &AAiGamePlayer::AiTimerTask);
@@ -39,6 +41,7 @@ void AAiGamePlayer::OnRoundStart()
 
 void AAiGamePlayer::OnInterrupt()
 {
+	Super::OnInterrupt();
 	if (Worker.IsValid())
 	{
 		Worker.Get()->End();
@@ -47,6 +50,7 @@ void AAiGamePlayer::OnInterrupt()
 
 void AAiGamePlayer::OnRetract(FIntPoint RetractPosition1, FIntPoint RetractPosition2)
 {
+	Super::OnRetract(RetractPosition1, RetractPosition2);
 	if (GetAiLevel() == 3)
 	{
 		MissFu.takeChess(RetractPosition1.X, RetractPosition1.Y);

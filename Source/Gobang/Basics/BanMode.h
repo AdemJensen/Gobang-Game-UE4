@@ -15,5 +15,5 @@ enum class EBanMode : uint8
 
     ON_ILLEGAL_BANNED = 1   UMETA(DisplayName = "On, illegal position banned"),
     ON_LOSE_IF_ILLEGAL = 2  UMETA(DisplayName = "On, no hints (Lose if action illegal)"),
-    OFF = 2                 UMETA(DisplayName = "Off")
+    OFF = 3                 UMETA(DisplayName = "Off")
 };

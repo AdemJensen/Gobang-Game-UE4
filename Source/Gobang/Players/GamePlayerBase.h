@@ -9,6 +9,8 @@
 #include "../Basics/ChessType.h"
 #include "GamePlayerBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEventDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FRetractEventDelegate, FIntPoint, RetractPosition1, FIntPoint, RetractPosition2);
 UCLASS()
 class GOBANG_API AGamePlayerBase : public AActor
 {
@@ -19,19 +21,27 @@ public:
 	AGamePlayerBase();
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		virtual void OnGameStart() { }	// Called outside, needs to implement inside.
+		virtual void OnGameStart() { OnGameStartDelegate.Broadcast(); }	// Called outside, needs to implement inside.
+	UPROPERTY(BlueprintAssignable, EditAnywhere, Category = "Game Actions")
+		FEventDelegate OnGameStartDelegate;
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		virtual void OnRoundStart() { }	// Called outside, needs to implement inside.
+		virtual void OnRoundStart() { OnRoundStartDelegate.Broadcast(); }	// Called outside, needs to implement inside.
+	UPROPERTY(BlueprintAssignable, EditAnywhere, Category = "Game Actions")
+		FEventDelegate OnRoundStartDelegate;
 
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		virtual void OnInterrupt() { }	// Called outside, needs to implement inside.
+		virtual void OnInterrupt() { OnInterruptDelegate.Broadcast(); }	// Called outside, needs to implement inside.
+	UPROPERTY(BlueprintAssignable, EditAnywhere, Category = "Game Actions")
+		FEventDelegate OnInterruptDelegate;
 
 	/**
 	This function is called when either of the player called "DoRetract."
 	*/
 	UFUNCTION(BlueprintCallable, Category = "Game Actions")
-		virtual void OnRetract(FIntPoint RetractPosition1, FIntPoint RetractPosition2) { }	// Called outside, needs to implement inside.
+		virtual void OnRetract(FIntPoint RetractPosition1, FIntPoint RetractPosition2) { OnRetractDelegate.Broadcast(RetractPosition1, RetractPosition2); }	// Called outside, needs to implement inside.
+	UPROPERTY(BlueprintAssignable, EditAnywhere, Category = "Game Actions")
+		FRetractEventDelegate OnRetractDelegate;
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetChessType(EChessType Type) { ChessType = Type; }

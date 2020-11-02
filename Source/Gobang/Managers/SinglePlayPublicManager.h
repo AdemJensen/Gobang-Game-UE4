@@ -19,15 +19,15 @@ class GOBANG_API ASinglePlayPublicManager : public APublicManagerBase
 
 public:
 
+	virtual EPublicManagerType GetManagerType() { return EPublicManagerType::SINGLE_PLAY; }
+
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		ASinglePlayPublicManager* InitSinglePlayPublicManagerByValue(int32 DifficultyValue, EBanMode BanModeValue, float HintCoolDownValue, int32 RetractTimesValue, float RoundTimeLimitValue);
+
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetAiDifficulty(int32 DifficultyLevel) { AiDifficulty = DifficultyLevel; }
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		int32 GetAiDifficulty() { return AiDifficulty; }
-
-	UFUNCTION(BlueprintCallable, Category = "Game Info")
-		ASinglePlayPublicManager* InitSinglePlayPublicManager(int32 DifficultyLevel, int32 BanModeLevel, int32 HintCoolDownLevel, int32 RetractTimesLevel, int32 RoundTimeLimitLevel);
-	UFUNCTION(BlueprintCallable, Category = "Game Info")
-		ASinglePlayPublicManager* InitSinglePlayPublicManagerByValue(int32 DifficultyValue, EBanMode BanModeValue, float HintCoolDownValue, int32 RetractTimesValue, float RoundTimeLimitValue);
 
 protected:
 

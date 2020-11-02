@@ -4,6 +4,7 @@
 #include "GameManagerBase.h"
 #include "../Basics/Chess.h"
 #include "../Basics/GameStage.h"
+#include "PublicManagerType.h"
 
 // Sets default values
 AGameManagerBase::AGameManagerBase()
@@ -47,6 +48,23 @@ void AGameManagerBase::DoGameStart()
 	GamePlayer_White->SetRetractRemainTimes(PublicManager->GetTotalRetractTimes());
 
 	// Start Master Engine
+	/*double TimeLimitTemp = -1;
+	if (PublicManager->GetManagerType() == EPublicManagerType::SINGLE_PLAY)
+	{
+		TimeLimitTemp = PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit();
+	}
+	else if (PublicManager->GetManagerType() == EPublicManagerType::MULTI_PLAY)
+	{
+		if (((AMultiPlayPublicManager*)PublicManager)->IsServer)
+		{
+			TimeLimitTemp = PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit();
+		}
+		else
+		{
+			TimeLimitTemp = -1;
+		}
+	}
+	GameThread->SetTimeLimit(TimeLimitTemp);*/
 	GameThread->SetTimeLimit(PublicManager->GetRoundTimeLimit() == 0.0f ? -1 : PublicManager->GetRoundTimeLimit());
 	GameThread->StartGameThread();
 }

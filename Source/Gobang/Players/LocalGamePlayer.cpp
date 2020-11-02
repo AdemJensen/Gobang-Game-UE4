@@ -1,4 +1,4 @@
-// This is a private project, cannot be put at commercial use.
+	// This is a private project, cannot be put at commercial use.
 
 
 #include "LocalGamePlayer.h"
@@ -39,6 +39,7 @@ void ALocalGamePlayer::StartHintCalculation()
 
 void ALocalGamePlayer::OnGameStart()
 {
+	Super::OnGameStart();
 	Worker = nullptr;
 	MissAi.setDifficulty(2);
 	MissAi.setPlayer(GetChessType() == EChessType::BLACK ? 1 : 2);

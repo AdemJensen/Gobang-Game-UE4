@@ -10,6 +10,7 @@
 #include "../Basics/ProgramStage.h"
 #include "../Players/GamePlayerBase.h"
 #include "SinglePlayPublicManager.h"
+#include "MultiPlayPublicManager.h"
 #include "GameThreadTicker.h"
 #include "IndicationManager.h"
 #include "../Basics/UnexpectedGameActionType.h"
@@ -40,7 +41,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
 		ASinglePlayPublicManager* LastSinglePlayPublicManager;	// Valid in the first place.
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Game Info")
-		APublicManagerBase* LastMultiPlayPublicManager;	// Valid in the first place.
+		AMultiPlayPublicManager* LastMultiPlayPublicManager;	// Valid in the first place.
 
 	UFUNCTION(BlueprintCallable, Category = "Game Info")
 		void SetProgramStage(EProgramStage ProgramStage) { Stage = ProgramStage; }
