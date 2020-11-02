@@ -8,8 +8,10 @@
 #include "../Basics/ChessType.h"
 #include "../Basics/BanMode.h"
 #include "../Basics/UnexpectedGameActionType.h"
+#include "PublicManagerType.h"
 #include "PublicManagerBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FSendMessageAction, FString, Msg);
 UCLASS()
 class GOBANG_API APublicManagerBase : public AActor
 {
@@ -18,6 +20,9 @@ class GOBANG_API APublicManagerBase : public AActor
 public:	
 	// Sets default values for this actor's properties
 	APublicManagerBase();
+	
+	UFUNCTION(BlueprintCallable, Category = "Game Info")
+		virtual EPublicManagerType GetManagerType() { return EPublicManagerType::UNKNOWN; }
 
 	UFUNCTION(BlueprintCallable, Category = "Game Status")
 		void SetGameStage(EGameStage GameStage) { Stage = GameStage; }

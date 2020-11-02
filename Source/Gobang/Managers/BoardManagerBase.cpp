@@ -33,7 +33,7 @@ void ABoardManagerBase::InitGameBoard(ABoardLocator* LU, ABoardLocator* RD, bool
 		for (int j = 0; j < BOARD_SIZE; j++)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Green, FString::Printf(TEXT("Processing grid(%d, %d)"), i, j));
-			ABoardTrigger* NewTrigger = TheWorld->SpawnActor<ABoardTrigger>(Location_LU + FVector(unitX * i, unitY * j, 2), FRotator(0, 0, 0));
+			ABoardTrigger* NewTrigger = TheWorld->SpawnActor<ABoardTrigger>(Location_LU + FVector(unitX * i, unitY * j, 1.5), FRotator(0, 0, 0));
 			//TheWorld->SpawnActor<ATestActor>(Location_LU + FVector(unitX * i, unitY * j, 0), FRotator(0, 0, 0));
 			if (NewTrigger != nullptr)
 			{

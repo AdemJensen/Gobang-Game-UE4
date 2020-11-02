@@ -21,6 +21,14 @@ enum class EProgramStage : uint8
 
     AT_MULTI_TITLE_UI = 11              UMETA(DisplayName = "At Multi Title UI"),
 
+    AT_PUBLIC_NET_TITLE_UI = 31         UMETA(DisplayName = "At Public Network Title UI"),
+
+    AT_LOCAL_NET_TITLE_UI = 36          UMETA(DisplayName = "At Local Network Title UI"),
+    AT_LOCAL_NET_CREATE_UI = 37         UMETA(DisplayName = "At Local Network Create UI"),
+    AT_LOCAL_NET_JOIN_UI = 38           UMETA(DisplayName = "At Local Network Join UI"),
+    AT_LOCAL_NET_ROOM_UI = 39           UMETA(DisplayName = "At Local Network Room UI"),
+    AT_LOCAL_NET_ROOM_SETTINGS_UI = 40  UMETA(DisplayName = "At Local Network Room Settings UI"),
+
     // 51 ~ 100 ingame process.
     IN_GAME = 51                        UMETA(DisplayName = "In Game"),
     

@@ -6,6 +6,7 @@
 #include "BanMode.h"
 #include "../Players/GamePlayerType.h"
 #include "../Players/LocalGamePlayer.h"
+#include "../Players/LocalRemoteGamePlayer.h"
 #include "Engine.h"
 
 // Sets default values
@@ -34,7 +35,7 @@ ABoardTrigger::ABoardTrigger()
 
 void ABoardTrigger::InitUtility(FVector2D size, int32 Coord_X, int32 Coord_Y, ABoardManagerBase* WorldOwnerBoard)
 {
-	Existance->SetBoxExtent(FVector((size.X / 2) > 0 ? (size.X / 2) : (-size.X / 2) , (size.Y / 2) > 0 ? (size.Y / 2) : (-size.Y / 2), 1));
+	Existance->SetBoxExtent(FVector((size.X / 2) > 0 ? (size.X / 2) : (-size.X / 2) , (size.Y / 2) > 0 ? (size.Y / 2) : (-size.Y / 2), 1.5));
 	//Existance->SetHiddenInGame(false);
 	Coordinate_X = Coord_X;
 	Coordinate_Y = Coord_Y;
@@ -69,7 +70,8 @@ void ABoardTrigger::HandleClick()
 	AGobangGameModeBase* MyGameMode = Cast<AGobangGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 	EChessType CurrentType = MyGameMode->GameManager->PublicManager->GetCurrentPlayer();
 	if (MyGameMode->GameManager->GetProgramStage() == EProgramStage::IN_GAME 
-		&& MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
+		&& (MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER
+			|| MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_REMOTE_PLAYER))
 	{
 		if (MyGameMode->GameManager->PublicManager->GetBanMode() == EBanMode::ON_ILLEGAL_BANNED 
 			&& MyGameMode->GameManager->BoardManager->IsAvailable(Coordinate_X, Coordinate_Y, CurrentType) != 0
@@ -79,32 +81,20 @@ void ABoardTrigger::HandleClick()
 		}
 		else
 		{
-			Cast<ALocalGamePlayer>(MyGameMode->GameManager->GetGamePlayer(CurrentType))->DoRoundOver(FIntPoint(Coordinate_X, Coordinate_Y));
+			if (MyGameMode->GameManager->GetGamePlayer(CurrentType)->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER) 
+			{
+				Cast<ALocalGamePlayer>(MyGameMode->GameManager->GetGamePlayer(CurrentType))->DoRoundOver(FIntPoint(Coordinate_X, Coordinate_Y));
+			}
+			else 
+			{
+				//bool isNull = Cast<ALocalRemoteGamePlayer>(MyGameMode->GameManager->GetGamePlayer(CurrentType)) == nullptr;
+				//UE_LOG(LogTemp, Warning, TEXT("BlogTrigger: PLAYER IS %s."), isNull ? "NULL" : "OK");
+				Cast<ALocalRemoteGamePlayer>(MyGameMode->GameManager->GetGamePlayer(CurrentType))->DoRoundOver(FIntPoint(Coordinate_X, Coordinate_Y));
+			}
 		}
 	}
-	//if (OwnerBoard->GetCurrentStatus() == 2)
-	//{
-	//	if (OwnerBoard->PlaceChess(Coordinate_X, Coordinate_Y, OwnerBoard->GetSelfPlayer() == 1))
-	//	{
-	//		if (OwnerBoard->IsOver())
-	//		{
-	//			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK1")));
-	//			OwnerBoard->SetCurrentStatus(4);
-	//		}
-	//		else
-	//		{
-	//			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK2")));
-	//			OwnerBoard->SetCurrentStatus(3);
-	//			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK3")));
-	//			FTimerHandle UniqueHandle;
-	//			FTimerDelegate RespawnDelegate = FTimerDelegate::CreateUObject(this, &ABoardTrigger::TimerAction);
-	//			GetWorldTimerManager().SetTimer(UniqueHandle, RespawnDelegate, OwnerBoard->GetAiDifficulty() > 2 ? 0.1 : 1, false);
-	//			//OwnerBoard->MakeAiAction();
-	//			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Blue, FString::Printf(TEXT("OK4")));
-	//		}
-	//	}
-	//}
-	//OwnerBoard->HideHintIndicator();
+	
+	UE_LOG(LogTemp, Warning, TEXT("BlogTrigger: Click OK."));
 }
 
 void ABoardTrigger::TimerAction()

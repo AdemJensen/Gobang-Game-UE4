@@ -41,11 +41,12 @@ void AGobangPlayerPawn::TraceForBlock(const FVector& Start, const FVector& End, 
 	{
 		AActor* HitActor = HitResult.Actor.Get();
 		ABoardTrigger* BoardIndicator = Cast<ABoardTrigger>(HitActor);
-		
+		//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), *HitActor->GetName()));
 		if (BoardIndicator != nullptr)
 		{
 			//GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Yellow, FString::Printf(TEXT("Now mouse on %s"), (MyGameMode->Manager->IsAvailable(BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y, MyGameMode->Manager->GetSelfPlayer()) ? TEXT("Avail") : TEXT("Not avail"))));
-			if (MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER)
+			if (MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_PLAYER
+				|| MyGameMode->GameManager->GetGamePlayer(MyGameMode->GameManager->PublicManager->GetCurrentPlayer())->GetPlayerType() == EGamePlayerType::LOCAL_REMOTE_PLAYER)
 			{
 				int Avail = MyGameMode->GameManager->BoardManager->IsAvailable(
 					BoardIndicator->Coordinate_X, BoardIndicator->Coordinate_Y,
@@ -77,7 +78,7 @@ void AGobangPlayerPawn::Tick(float DeltaTime)
 	{
 		FVector Start, Dir, End;
 		PC->DeprojectMousePositionToWorld(Start, Dir);
-		End = Start + (Dir * 8000.0f);
+		End = Start + (Dir * 800.0f);
 		TraceForBlock(Start, End, false);
 	}
 }
